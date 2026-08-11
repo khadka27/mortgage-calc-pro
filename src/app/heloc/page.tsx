@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 
 import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 import { formatCurrency } from '@/lib/mortgage/decimalUtils';
 
 export default function HelocPage() {
@@ -177,6 +178,8 @@ export default function HelocPage() {
           </div>
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 }

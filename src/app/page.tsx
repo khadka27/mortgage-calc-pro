@@ -10,6 +10,7 @@ import CountrySelector from '@/components/CountrySelector';
 import DisclaimerSection from '@/components/DisclaimerSection';
 import ExtraPaymentsForm from '@/components/ExtraPaymentsForm';
 import FAQSection from '@/components/FAQSection';
+import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import LenderComparison from '@/components/LenderComparison';
 import LiveRateBanner from '@/components/LiveRateBanner';
@@ -196,6 +197,8 @@ function MortgageAppContent() {
         <FAQSection country={selectedCountry} />
         <DisclaimerSection country={selectedCountry} />
       </main>
+
+      <Footer />
     </div>
   );
 }

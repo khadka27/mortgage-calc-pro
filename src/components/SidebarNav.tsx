@@ -155,6 +155,10 @@ export default function SidebarNav({ isOpen, onToggle }: SidebarNavProps) {
     })).filter((cat) => cat.items.length > 0);
   }, [search]);
 
+  const cardStyle: React.CSSProperties = { backgroundColor: 'var(--bg-card)', borderColor: 'var(--border)' };
+  const tileStyle: React.CSSProperties = { backgroundColor: 'var(--bg-subtle)', borderColor: 'var(--border)' };
+  const inputStyle: React.CSSProperties = { backgroundColor: 'var(--bg-input)', borderColor: 'var(--border)', color: 'var(--text-primary)' };
+
   return (
     <>
       {/* Backdrop overlay for mobile drawer */}
@@ -165,14 +169,11 @@ export default function SidebarNav({ isOpen, onToggle }: SidebarNavProps) {
         />
       )}
 
-      {/* 1. COLLAPSED VERTICAL ICON RAIL (Pin on left edge matching user screenshot) */}
+      {/* 1. COLLAPSED VERTICAL ICON RAIL (Theme Token Styled) */}
       {!isOpen && (
         <aside
           className="hidden md:flex fixed top-24 left-3 z-30 flex-col items-center gap-2.5 p-2 rounded-2xl border shadow-lg backdrop-blur-md transition-all duration-200"
-          style={{
-            backgroundColor: 'color-mix(in srgb, var(--bg-card) 92%, transparent)',
-            borderColor: 'var(--border)',
-          }}
+          style={cardStyle}
         >
           {/* Expand Drawer Button */}
           <button
@@ -182,30 +183,29 @@ export default function SidebarNav({ isOpen, onToggle }: SidebarNavProps) {
             title="Expand All Tools Drawer"
           >
             <PanelLeftOpen className="w-5 h-5" />
-            <span className="absolute left-14 bg-slate-900 text-white text-[11px] font-bold px-2 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-md">
+            <span className="absolute left-14 bg-slate-900 text-white text-[11px] font-bold px-2 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-md z-50">
               Expand All Tools
             </span>
           </button>
 
-          <div className="w-6 h-[1px] bg-slate-200 dark:bg-zinc-800 my-0.5" />
+          <div className="w-6 h-[1px] my-0.5" style={{ backgroundColor: 'var(--border)' }} />
 
-          {/* Quick Vertical Icon Buttons (matching screenshot circles) */}
+          {/* Quick Vertical Icon Buttons */}
           {COLLAPSED_SHORTCUTS.map((item) => {
             const isActive = pathname === item.href;
             return (
               <Link
                 key={item.title}
                 href={item.href}
-                className={`
-                  w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 relative group
-                  ${isActive
-                    ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/25 font-bold'
-                    : 'text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800/80 border border-slate-200/50 dark:border-zinc-800'
-                  }
-                `}
+                className="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 relative group border"
+                style={{
+                  backgroundColor: isActive ? '#10b981' : 'var(--bg-subtle)',
+                  borderColor: isActive ? '#10b981' : 'var(--border)',
+                  color: isActive ? '#ffffff' : 'var(--text-secondary)',
+                }}
               >
                 <item.icon className="w-4 h-4" />
-                <span className="absolute left-14 bg-slate-900 dark:bg-zinc-950 text-white text-[11px] font-semibold px-2.5 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-lg border border-slate-800 z-50">
+                <span className="absolute left-14 bg-slate-900 text-white text-[11px] font-semibold px-2.5 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-lg z-50">
                   {item.title}
                 </span>
               </Link>
@@ -214,26 +214,26 @@ export default function SidebarNav({ isOpen, onToggle }: SidebarNavProps) {
         </aside>
       )}
 
-      {/* 2. EXPANDED DRAWER SIDEBAR */}
+      {/* 2. EXPANDED DRAWER SIDEBAR (Theme Token Styled) */}
       <aside
         className={`
           fixed top-0 left-0 z-50 h-full w-80 max-w-[85vw]
-          bg-white dark:bg-zinc-900 border-r border-slate-200 dark:border-zinc-800
-          shadow-2xl flex flex-col transition-transform duration-300 ease-in-out
+          border-r shadow-2xl flex flex-col transition-transform duration-300 ease-in-out
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}
         `}
+        style={cardStyle}
       >
         {/* Sidebar Header */}
-        <div className="p-4 border-b border-slate-200 dark:border-zinc-800 flex items-center justify-between gap-3 bg-slate-50 dark:bg-zinc-950/50">
+        <div className="p-4 border-b flex items-center justify-between gap-3" style={tileStyle}>
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-500 flex items-center justify-center text-white shadow-md shadow-emerald-500/20">
               <Calculator className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-sm font-black tracking-tight text-slate-900 dark:text-white">
+              <h2 className="text-sm font-black tracking-tight" style={{ color: 'var(--text-primary)' }}>
                 All Mortgage Tools
               </h2>
-              <p className="text-[10px] text-slate-500 dark:text-zinc-400">
+              <p className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
                 20+ Specialized Calculators
               </p>
             </div>
@@ -242,7 +242,8 @@ export default function SidebarNav({ isOpen, onToggle }: SidebarNavProps) {
           <button
             type="button"
             onClick={onToggle}
-            className="p-1.5 rounded-xl border border-slate-200 dark:border-zinc-700 text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
+            className="p-1.5 rounded-xl border transition-colors"
+            style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border)', color: 'var(--text-primary)' }}
             title="Collapse Sidebar"
           >
             <PanelLeftClose className="w-4 h-4" />
@@ -250,15 +251,16 @@ export default function SidebarNav({ isOpen, onToggle }: SidebarNavProps) {
         </div>
 
         {/* Search Bar */}
-        <div className="p-3 border-b border-slate-200 dark:border-zinc-800">
+        <div className="p-3 border-b" style={{ borderColor: 'var(--border)' }}>
           <div className="relative">
-            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-muted)' }} />
             <input
               type="text"
               placeholder="Search calculator tools…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full rounded-xl pl-9 pr-3 py-2 text-xs border border-slate-200 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-950 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
+              className="w-full rounded-xl pl-9 pr-3 py-2 text-xs border focus:outline-none focus:ring-2 focus:ring-emerald-500/40"
+              style={inputStyle}
             />
           </div>
         </div>
@@ -272,21 +274,23 @@ export default function SidebarNav({ isOpen, onToggle }: SidebarNavProps) {
                 <button
                   type="button"
                   onClick={() => toggleCategory(cat.category)}
-                  className="w-full flex items-center justify-between p-2 rounded-xl text-xs font-bold text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
+                  className="w-full flex items-center justify-between p-2 rounded-xl text-xs font-bold transition-colors"
+                  style={{ color: 'var(--text-primary)' }}
                 >
                   <div className="flex items-center gap-2">
                     <cat.icon className="w-3.5 h-3.5 text-emerald-500" />
                     <span>{cat.category}</span>
                   </div>
                   <ChevronDown
-                    className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${
+                    className={`w-3.5 h-3.5 transition-transform duration-200 ${
                       isCatOpen ? 'rotate-180' : ''
                     }`}
+                    style={{ color: 'var(--text-muted)' }}
                   />
                 </button>
 
                 {isCatOpen && (
-                  <div className="pl-2 space-y-0.5 border-l-2 border-slate-200 dark:border-zinc-800 ml-3">
+                  <div className="pl-2 space-y-0.5 border-l-2 ml-3" style={{ borderColor: 'var(--border)' }}>
                     {cat.items.map((item) => {
                       const isActive = pathname === item.href;
                       return (
@@ -296,25 +300,24 @@ export default function SidebarNav({ isOpen, onToggle }: SidebarNavProps) {
                           onClick={() => {
                             if (window.innerWidth < 768) onToggle();
                           }}
-                          className={`
-                            group flex items-start gap-2.5 p-2 rounded-xl text-xs transition-all duration-150
-                            ${isActive
-                              ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/30'
-                              : 'text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800/60'
-                            }
-                          `}
+                          className="group flex items-start gap-2.5 p-2 rounded-xl text-xs transition-all duration-150 border"
+                          style={{
+                            backgroundColor: isActive ? 'var(--accent-bg)' : 'transparent',
+                            borderColor: isActive ? 'var(--accent-border)' : 'transparent',
+                            color: isActive ? 'var(--accent)' : 'var(--text-secondary)',
+                          }}
                         >
                           <item.icon className="w-3.5 h-3.5 mt-0.5 shrink-0 text-emerald-500 group-hover:scale-110 transition-transform" />
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center justify-between gap-1">
-                              <span className="truncate">{item.title}</span>
+                              <span className="truncate font-semibold">{item.title}</span>
                               {item.badge && (
                                 <span className="text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25 shrink-0">
                                   {item.badge}
                                 </span>
                               )}
                             </div>
-                            <p className="text-[10px] text-slate-400 dark:text-zinc-500 truncate mt-0.5">
+                            <p className="text-[10px] truncate mt-0.5" style={{ color: 'var(--text-muted)' }}>
                               {item.description}
                             </p>
                           </div>
@@ -329,7 +332,7 @@ export default function SidebarNav({ isOpen, onToggle }: SidebarNavProps) {
         </div>
 
         {/* Sidebar Footer */}
-        <div className="p-3 border-t border-slate-200 dark:border-zinc-800 text-[11px] text-slate-500 dark:text-zinc-400 bg-slate-50 dark:bg-zinc-950/50 flex items-center justify-between">
+        <div className="p-3 border-t text-[11px] flex items-center justify-between" style={{ ...tileStyle, color: 'var(--text-muted)' }}>
           <span>MortgagePro Global</span>
           <span className="font-bold text-emerald-500">v2.5</span>
         </div>

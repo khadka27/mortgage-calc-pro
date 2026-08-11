@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useMemo, useState } from 'react';
 
 import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 import { useLiveRates, LiveMortgageRate } from '@/hooks/useLiveRates';
 import { APP_NAME } from '@/lib/env';
 
@@ -238,6 +239,8 @@ export default function LiveRatesPage() {
           </div>
         )}
       </main>
+
+      <Footer />
     </div>
   );
 }
