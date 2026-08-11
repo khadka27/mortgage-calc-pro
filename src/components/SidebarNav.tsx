@@ -2,14 +2,10 @@
 
 import {
   Activity,
-  ArrowRight,
   BadgePercent,
-  BookOpen,
   Building,
   Calculator,
   ChevronDown,
-  ChevronLeft,
-  ChevronRight,
   CreditCard,
   DollarSign,
   FileSpreadsheet,
@@ -27,7 +23,6 @@ import {
   Sparkles,
   TrendingDown,
   Wallet,
-  X,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -118,6 +113,16 @@ export const ALL_MORTGAGE_TOOLS: ToolCategory[] = [
   },
 ];
 
+const COLLAPSED_SHORTCUTS = [
+  { title: 'Mortgage Calculator', href: '/', icon: Calculator },
+  { title: 'Refinance', href: '/?tab=refinance', icon: RefreshCw },
+  { title: 'Affordability', href: '/?tab=affordability', icon: DollarSign },
+  { title: 'Live Rates', href: '/live-rates', icon: Activity },
+  { title: 'HELOC', href: '/heloc', icon: Wallet },
+  { title: 'Rent vs Buy', href: '/rent-vs-buy', icon: Scale },
+  { title: 'Canadian Rules', href: '/mortgage-calculator/ca', icon: Globe },
+];
+
 interface SidebarNavProps {
   isOpen: boolean;
   onToggle: () => void;
@@ -152,7 +157,7 @@ export default function SidebarNav({ isOpen, onToggle }: SidebarNavProps) {
 
   return (
     <>
-      {/* Backdrop overlay for mobile */}
+      {/* Backdrop overlay for mobile drawer */}
       {isOpen && (
         <div
           onClick={onToggle}
@@ -160,7 +165,56 @@ export default function SidebarNav({ isOpen, onToggle }: SidebarNavProps) {
         />
       )}
 
-      {/* Sidebar Drawer Container */}
+      {/* 1. COLLAPSED VERTICAL ICON RAIL (Pin on left edge matching user screenshot) */}
+      {!isOpen && (
+        <aside
+          className="hidden md:flex fixed top-24 left-3 z-30 flex-col items-center gap-2.5 p-2 rounded-2xl border shadow-lg backdrop-blur-md transition-all duration-200"
+          style={{
+            backgroundColor: 'color-mix(in srgb, var(--bg-card) 92%, transparent)',
+            borderColor: 'var(--border)',
+          }}
+        >
+          {/* Expand Drawer Button */}
+          <button
+            type="button"
+            onClick={onToggle}
+            className="w-10 h-10 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white flex items-center justify-center shadow-md shadow-emerald-500/25 transition-transform hover:scale-105 group relative"
+            title="Expand All Tools Drawer"
+          >
+            <PanelLeftOpen className="w-5 h-5" />
+            <span className="absolute left-14 bg-slate-900 text-white text-[11px] font-bold px-2 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-md">
+              Expand All Tools
+            </span>
+          </button>
+
+          <div className="w-6 h-[1px] bg-slate-200 dark:bg-zinc-800 my-0.5" />
+
+          {/* Quick Vertical Icon Buttons (matching screenshot circles) */}
+          {COLLAPSED_SHORTCUTS.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.title}
+                href={item.href}
+                className={`
+                  w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 relative group
+                  ${isActive
+                    ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/25 font-bold'
+                    : 'text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800/80 border border-slate-200/50 dark:border-zinc-800'
+                  }
+                `}
+              >
+                <item.icon className="w-4 h-4" />
+                <span className="absolute left-14 bg-slate-900 dark:bg-zinc-950 text-white text-[11px] font-semibold px-2.5 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-lg border border-slate-800 z-50">
+                  {item.title}
+                </span>
+              </Link>
+            );
+          })}
+        </aside>
+      )}
+
+      {/* 2. EXPANDED DRAWER SIDEBAR */}
       <aside
         className={`
           fixed top-0 left-0 z-50 h-full w-80 max-w-[85vw]
