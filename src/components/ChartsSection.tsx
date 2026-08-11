@@ -200,7 +200,7 @@ export default function ChartsSection({ result }: ChartsSectionProps) {
               <XAxis dataKey="year" stroke="#71717a" fontSize={11} />
               <YAxis stroke="#71717a" fontSize={11} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
               <Tooltip
-                formatter={(val: number) => [formatCurrency(val, currencyCode), 'Remaining Balance']}
+                formatter={(val: any) => [formatCurrency(Number(val) || 0, currencyCode), 'Remaining Balance']}
                 contentStyle={{ backgroundColor: '#18181b', borderColor: '#27272a', borderRadius: 8, color: '#fff' }}
               />
               <Area type="monotone" dataKey="endingBalance" stroke="#10b981" strokeWidth={2} fillOpacity={1} fill="url(#balanceGrad)" />
@@ -214,7 +214,7 @@ export default function ChartsSection({ result }: ChartsSectionProps) {
               <XAxis type="number" stroke="#71717a" fontSize={11} tickFormatter={(v) => `$${v}`} />
               <YAxis type="category" dataKey="name" stroke="#71717a" fontSize={11} width={130} />
               <Tooltip
-                formatter={(val: number) => [formatCurrency(val, currencyCode), 'Payment Component']}
+                formatter={(val: any) => [formatCurrency(Number(val) || 0, currencyCode), 'Payment Component']}
                 contentStyle={{ backgroundColor: '#18181b', borderColor: '#27272a', borderRadius: 8, color: '#fff' }}
               />
               <Bar dataKey="value" radius={[0, 6, 6, 0]}>
@@ -248,7 +248,7 @@ export default function ChartsSection({ result }: ChartsSectionProps) {
               <XAxis dataKey="year" stroke="#71717a" fontSize={11} />
               <YAxis stroke="#71717a" fontSize={11} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
               <Tooltip
-                formatter={(val: number) => [formatCurrency(val, currencyCode), 'Cumulative Interest']}
+                formatter={(val: any) => [formatCurrency(Number(val) || 0, currencyCode), 'Cumulative Interest']}
                 contentStyle={{ backgroundColor: '#18181b', borderColor: '#27272a', borderRadius: 8, color: '#fff' }}
               />
               <Line type="monotone" dataKey="cumulativeInterest" stroke="#f59e0b" strokeWidth={3} dot={false} />
