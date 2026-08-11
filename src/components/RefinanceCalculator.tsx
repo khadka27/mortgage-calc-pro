@@ -41,26 +41,26 @@ export default function RefinanceCalculator({ country }: RefinanceCalculatorProp
   const labelCls = 'block text-[11px] font-semibold uppercase tracking-wider mb-1';
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 overflow-hidden">
       {/* Input columns */}
-      <div className="lg:col-span-7 border rounded-2xl p-6 shadow-sm space-y-6" style={cardStyle}>
+      <div className="lg:col-span-7 border rounded-2xl p-4 sm:p-6 shadow-sm space-y-6" style={cardStyle}>
         {/* Header */}
-        <div className="border-b pb-3 flex items-center justify-between" style={{ borderColor: 'var(--border)' }}>
+        <div className="border-b pb-3 flex items-center justify-between gap-2" style={{ borderColor: 'var(--border)' }}>
           <h2 className="text-base font-bold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
-            <RefreshCw className="w-5 h-5" style={{ color: 'var(--accent)' }} />
+            <RefreshCw className="w-5 h-5 shrink-0" style={{ color: 'var(--accent)' }} />
             Mortgage Refinance Comparison
           </h2>
           <span
-            className="text-xs font-semibold px-2 py-0.5 rounded-full border"
+            className="text-xs font-semibold px-2 py-0.5 rounded-full border shrink-0"
             style={{ backgroundColor: 'var(--accent-bg)', color: 'var(--accent)', borderColor: 'var(--accent-border)' }}
           >
             {country.currencyCode} ({country.currencySymbol})
           </span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
           {/* Current Mortgage */}
-          <div className="p-4 rounded-xl border space-y-3" style={panelStyle}>
+          <div className="p-3.5 sm:p-4 rounded-xl border space-y-3" style={panelStyle}>
             <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
               Current Mortgage
             </h3>
@@ -84,7 +84,7 @@ export default function RefinanceCalculator({ country }: RefinanceCalculatorProp
           </div>
 
           {/* Proposed Refinance */}
-          <div className="p-4 rounded-xl border space-y-3" style={panelStyle}>
+          <div className="p-3.5 sm:p-4 rounded-xl border space-y-3" style={panelStyle}>
             <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--accent)' }}>
               Proposed Refinance
             </h3>
@@ -125,24 +125,24 @@ export default function RefinanceCalculator({ country }: RefinanceCalculatorProp
       </div>
 
       {/* Results */}
-      <div className="lg:col-span-5 border rounded-2xl p-6 shadow-sm flex flex-col justify-between gap-6" style={cardStyle}>
+      <div className="lg:col-span-5 border rounded-2xl p-4 sm:p-6 shadow-sm flex flex-col justify-between gap-6 overflow-hidden" style={cardStyle}>
         {/* Hero metric */}
-        <div>
+        <div className="min-w-0">
           <div className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--accent)' }}>
             Estimated Monthly Savings
           </div>
           {result.monthlySavings > 0 ? (
-            <div className="text-4xl font-black tracking-tight" style={{ color: 'var(--accent)' }}>
+            <div className="text-3xl sm:text-4xl font-black tracking-tight break-words min-w-0" style={{ color: 'var(--accent)' }}>
               {formatCurrency(result.monthlySavings, country.currencyCode)} / mo
             </div>
           ) : (
-            <div className="text-2xl font-bold" style={{ color: '#f43f5e' }}>
+            <div className="text-xl sm:text-2xl font-bold" style={{ color: '#f43f5e' }}>
               No Monthly Savings
             </div>
           )}
-          <p className="text-xs mt-1.5" style={{ color: 'var(--text-muted)' }}>
+          <p className="text-xs mt-1.5 leading-relaxed" style={{ color: 'var(--text-muted)' }}>
             New payment {formatCurrency(result.newMonthlyPayment, country.currencyCode)} vs current{' '}
-            {formatCurrency(currentMonthlyPayment, country.currencyCode)}.
+            {formatCurrency(currentMonthlyPayment, currencyCode)}.
           </p>
         </div>
 
@@ -162,9 +162,9 @@ export default function RefinanceCalculator({ country }: RefinanceCalculatorProp
               positive: result.netLifetimeSavings > 0,
             },
           ].map(({ label, value, positive }) => (
-            <div key={label} className="flex items-center justify-between p-3.5 rounded-xl border text-xs" style={tileStyle}>
-              <span className="font-medium" style={{ color: 'var(--text-secondary)' }}>{label}</span>
-              <span className="font-bold" style={{ color: positive ? 'var(--accent)' : '#f43f5e' }}>{value}</span>
+            <div key={label} className="flex items-center justify-between p-3.5 rounded-xl border text-xs min-w-0 gap-2" style={tileStyle}>
+              <span className="font-medium truncate" style={{ color: 'var(--text-secondary)' }}>{label}</span>
+              <span className="font-bold shrink-0 text-right" style={{ color: positive ? 'var(--accent)' : '#f43f5e' }}>{value}</span>
             </div>
           ))}
         </div>

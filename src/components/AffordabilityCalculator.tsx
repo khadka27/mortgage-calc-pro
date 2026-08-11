@@ -34,16 +34,16 @@ export default function AffordabilityCalculator({ country }: AffordabilityCalcul
   const cardStyle: React.CSSProperties = { backgroundColor: 'var(--bg-card)', borderColor: 'var(--border)' };
   const tileStyle: React.CSSProperties = { backgroundColor: 'var(--bg-subtle)', borderColor: 'var(--border)' };
   const inputStyle: React.CSSProperties = { backgroundColor: 'var(--bg-input)', borderColor: 'var(--border)', color: 'var(--text-primary)' };
-  const inputCls = 'w-full rounded-xl px-4 py-2.5 text-sm font-semibold border focus:outline-none focus:ring-2 focus:ring-emerald-500/40';
+  const inputCls = 'w-full rounded-xl px-3.5 py-2.5 text-sm font-semibold border focus:outline-none focus:ring-2 focus:ring-emerald-500/40';
   const labelCls = 'block text-xs font-semibold uppercase tracking-wider mb-1.5';
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 overflow-hidden">
       {/* Input Form */}
-      <div className="lg:col-span-6 border rounded-2xl p-6 shadow-sm space-y-5" style={cardStyle}>
+      <div className="lg:col-span-6 border rounded-2xl p-4 sm:p-6 shadow-sm space-y-5" style={cardStyle}>
         <div className="border-b pb-3" style={{ borderColor: 'var(--border)' }}>
           <h2 className="text-base font-bold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
-            <Home className="w-5 h-5" style={{ color: 'var(--accent)' }} />
+            <Home className="w-5 h-5 shrink-0" style={{ color: 'var(--accent)' }} />
             Home Affordability Inputs
           </h2>
           <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>
@@ -68,7 +68,7 @@ export default function AffordabilityCalculator({ country }: AffordabilityCalcul
             </div>
           ))}
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className={labelCls} style={{ color: 'var(--text-muted)' }}>Interest Rate (%)</label>
               <input
@@ -93,7 +93,7 @@ export default function AffordabilityCalculator({ country }: AffordabilityCalcul
           <div className="border-t pt-3 space-y-2.5" style={{ borderColor: 'var(--border)' }}>
             <div className="flex items-center justify-between">
               <label className="text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5" style={{ color: 'var(--text-muted)' }}>
-                <Sliders className="w-3.5 h-3.5" style={{ color: 'var(--accent)' }} />
+                <Sliders className="w-3.5 h-3.5 shrink-0" style={{ color: 'var(--accent)' }} />
                 Max Total DTI Limit
               </label>
               <span className="text-xs font-bold" style={{ color: 'var(--accent)' }}>{targetMaxDti}%</span>
@@ -109,15 +109,15 @@ export default function AffordabilityCalculator({ country }: AffordabilityCalcul
       </div>
 
       {/* Results Column */}
-      <div className="lg:col-span-6 border rounded-2xl p-6 sm:p-8 shadow-sm flex flex-col justify-between gap-6" style={cardStyle}>
-        <div>
+      <div className="lg:col-span-6 border rounded-2xl p-4 sm:p-8 shadow-sm flex flex-col justify-between gap-6 overflow-hidden" style={cardStyle}>
+        <div className="min-w-0">
           <div className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--accent)' }}>
             Estimated Maximum Home Price
           </div>
-          <div className="text-4xl sm:text-5xl font-black tracking-tight" style={{ color: 'var(--text-primary)' }}>
+          <div className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight break-words min-w-0" style={{ color: 'var(--text-primary)' }}>
             {formatCurrency(result.maxHomePrice, country.currencyCode)}
           </div>
-          <p className="text-xs mt-1.5" style={{ color: 'var(--text-muted)' }}>
+          <p className="text-xs mt-1.5 leading-relaxed" style={{ color: 'var(--text-muted)' }}>
             Max loan {formatCurrency(result.maxLoanAmount, country.currencyCode)} + {formatCurrency(result.downPaymentAmount, country.currencyCode)} down
           </p>
         </div>
@@ -128,9 +128,9 @@ export default function AffordabilityCalculator({ country }: AffordabilityCalcul
             { label: 'Housing DTI Ratio', value: `${result.housingDtiPct}%`, accent: false },
             { label: 'Total DTI (Housing + Debts)', value: `${result.totalDtiPct}%`, accent: false },
           ].map(({ label, value, accent }) => (
-            <div key={label} className="flex items-center justify-between p-3.5 rounded-xl border" style={tileStyle}>
-              <span className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>{label}</span>
-              <span className="text-sm font-bold" style={{ color: accent ? 'var(--accent)' : 'var(--text-primary)' }}>{value}</span>
+            <div key={label} className="flex items-center justify-between p-3.5 rounded-xl border min-w-0 gap-2" style={tileStyle}>
+              <span className="text-xs font-medium truncate" style={{ color: 'var(--text-secondary)' }}>{label}</span>
+              <span className="text-xs sm:text-sm font-bold shrink-0 text-right" style={{ color: accent ? 'var(--accent)' : 'var(--text-primary)' }}>{value}</span>
             </div>
           ))}
         </div>

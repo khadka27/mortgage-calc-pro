@@ -67,12 +67,12 @@ export default function MortgageForm({
 
   return (
     <div
-      className="border rounded-2xl p-5 sm:p-6 shadow-sm space-y-6"
+      className="border rounded-2xl p-4 sm:p-6 shadow-sm space-y-6 overflow-hidden"
       style={cardStyle}
     >
       {/* Card Header */}
-      <div className="flex items-center justify-between border-b pb-4" style={{ borderColor: 'var(--border)' }}>
-        <h2 className="text-base font-bold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+      <div className="flex items-center justify-between border-b pb-4 gap-2" style={{ borderColor: 'var(--border)' }}>
+        <h2 className="text-base font-bold flex items-center gap-2 flex-wrap" style={{ color: 'var(--text-primary)' }}>
           Mortgage Parameters
           <span
             className="text-xs font-semibold px-2 py-0.5 rounded-full border"
@@ -88,7 +88,7 @@ export default function MortgageForm({
         <button
           type="button"
           onClick={onReset}
-          className="flex items-center gap-1 text-xs font-medium transition-colors hover:text-emerald-500"
+          className="flex items-center gap-1 text-xs font-medium transition-colors hover:text-emerald-500 shrink-0"
           style={{ color: 'var(--text-muted)' }}
         >
           <RotateCcw className="w-3 h-3" />
@@ -96,7 +96,7 @@ export default function MortgageForm({
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Property Price */}
         <div>
           <label className={labelCls} style={{ color: 'var(--text-muted)' }}>
@@ -123,7 +123,7 @@ export default function MortgageForm({
 
         {/* Down Payment */}
         <div>
-          <div className="flex items-center justify-between mb-1.5">
+          <div className="flex items-center justify-between mb-1.5 gap-1 flex-wrap">
             <label className={labelCls} style={{ color: 'var(--text-muted)' }}>Down Payment</label>
             <div
               className="flex items-center gap-0.5 p-0.5 rounded-lg border text-[11px]"
@@ -209,14 +209,14 @@ export default function MortgageForm({
         <div>
           <label className={labelCls} style={{ color: 'var(--text-muted)' }}>Calculated Loan Amount</label>
           <div
-            className="rounded-xl px-4 py-2.5 text-sm font-bold flex items-center justify-between border"
+            className="rounded-xl px-4 py-2.5 text-sm font-bold flex items-center justify-between border min-w-0"
             style={{ backgroundColor: 'var(--bg-subtle)', borderColor: 'var(--border)', color: 'var(--accent)' }}
           >
-            <span>
+            <span className="truncate">
               {country.currencySymbol}
               {loanAmount.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
             </span>
-            <span className="text-[11px] font-normal" style={{ color: 'var(--text-muted)' }}>
+            <span className="text-[11px] font-normal shrink-0 ml-2" style={{ color: 'var(--text-muted)' }}>
               Price − Down
             </span>
           </div>
@@ -271,7 +271,7 @@ export default function MortgageForm({
         </div>
 
         {/* Mortgage Type */}
-        <div className="md:col-span-2">
+        <div className="sm:col-span-2">
           <label className={labelCls} style={{ color: 'var(--text-muted)' }}>
             Mortgage Product Type ({country.countryName})
           </label>
@@ -294,10 +294,10 @@ export default function MortgageForm({
           Taxes, Insurance & Additional Fees
         </h3>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {/* Property Tax */}
           <div>
-            <label className="block text-[11px] font-semibold mb-1" style={{ color: 'var(--text-muted)' }}>
+            <label className="block text-[11px] font-semibold mb-1 truncate" style={{ color: 'var(--text-muted)' }}>
               Annual Property Tax ({country.currencySymbol})
             </label>
             <input
@@ -314,7 +314,7 @@ export default function MortgageForm({
 
           {/* Home Insurance */}
           <div>
-            <label className="block text-[11px] font-semibold mb-1" style={{ color: 'var(--text-muted)' }}>
+            <label className="block text-[11px] font-semibold mb-1 truncate" style={{ color: 'var(--text-muted)' }}>
               Annual Home Insurance ({country.currencySymbol})
             </label>
             <input
@@ -331,7 +331,7 @@ export default function MortgageForm({
 
           {/* PMI */}
           <div>
-            <label className="block text-[11px] font-semibold mb-1" style={{ color: 'var(--text-muted)' }}>
+            <label className="block text-[11px] font-semibold mb-1 truncate" style={{ color: 'var(--text-muted)' }}>
               Monthly PMI / Insurance ({country.currencySymbol})
             </label>
             <input
@@ -348,7 +348,7 @@ export default function MortgageForm({
 
           {/* HOA */}
           <div>
-            <label className="block text-[11px] font-semibold mb-1" style={{ color: 'var(--text-muted)' }}>
+            <label className="block text-[11px] font-semibold mb-1 truncate" style={{ color: 'var(--text-muted)' }}>
               Monthly HOA / Fees ({country.currencySymbol})
             </label>
             <input
