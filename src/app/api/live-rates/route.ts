@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 
+import { RATE_API_KEY, RATE_API_URL } from '@/lib/env';
+
 export const revalidate = 3600; // Cache for 1 hour (ISR)
 
 interface RateApiBenchmark {
@@ -53,8 +55,8 @@ export interface LiveRatesPayload {
 }
 
 export async function GET() {
-  const apiKey = process.env.RATE_API_KEY;
-  const apiUrl = process.env.RATE_API_URL ?? 'https://api.rateapi.dev/v1/benchmarks';
+  const apiKey = RATE_API_KEY;
+  const apiUrl = RATE_API_URL;
 
   if (!apiKey) {
     return NextResponse.json(
