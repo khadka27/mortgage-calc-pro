@@ -1,31 +1,99 @@
 @import "tailwindcss";
 
+/* =========================================================
+   DESIGN TOKENS — Light mode (default)
+   ========================================================= */
+:root {
+  --bg-page:    #f8fafc;
+  --bg-card:    #ffffff;
+  --bg-subtle:  #f1f5f9;
+  --bg-input:   #f8fafc;
+  --border:     #e2e8f0;
+  --border-focus: #059669;
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --accent:     #059669;
+  --accent-hover: #047857;
+  --accent-bg:  #d1fae5;
+  --accent-text: #065f46;
+  --accent-border: #6ee7b7;
+  --scrollbar-track: #f1f5f9;
+  --scrollbar-thumb: #cbd5e1;
+  --scrollbar-thumb-hover: #94a3b8;
+}
+
+/* =========================================================
+   DESIGN TOKENS — Dark mode
+   ========================================================= */
+.dark {
+  --bg-page:    #09090b;
+  --bg-card:    #18181b;
+  --bg-subtle:  #27272a;
+  --bg-input:   #09090b;
+  --border:     #3f3f46;
+  --border-focus: #10b981;
+  --text-primary: #f4f4f5;
+  --text-secondary: #d4d4d8;
+  --text-muted: #a1a1aa;
+  --accent:     #10b981;
+  --accent-hover: #34d399;
+  --accent-bg:  rgba(16, 185, 129, 0.1);
+  --accent-text: #6ee7b7;
+  --accent-border: rgba(16, 185, 129, 0.3);
+  --scrollbar-track: #09090b;
+  --scrollbar-thumb: #27272a;
+  --scrollbar-thumb-hover: #3f3f46;
+}
+
+/* =========================================================
+   BASE LAYER
+   ========================================================= */
 @layer base {
+  *, *::before, *::after {
+    transition-property: background-color, border-color, color;
+    transition-duration: 180ms;
+    transition-timing-function: ease;
+  }
+
+  /* suppress transition on pseudo elements that don't need it */
+  svg *, path {
+    transition: none;
+  }
+
   body {
-    @apply bg-zinc-950 text-zinc-100 antialiased font-sans selection:bg-emerald-500 selection:text-zinc-950;
+    background-color: var(--bg-page);
+    color: var(--text-primary);
+    @apply antialiased font-sans;
+    selection-color: var(--accent);
+    @apply selection:text-white selection:bg-emerald-500;
   }
 }
 
-/* Custom scrollbars for data tables */
+/* =========================================================
+   SCROLLBAR STYLING
+   ========================================================= */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #09090b;
+  background: var(--scrollbar-track);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #27272a;
+  background: var(--scrollbar-thumb);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3f3f46;
+  background: var(--scrollbar-thumb-hover);
 }
 
-/* Media query print styles for printing financial statements */
+/* =========================================================
+   PRINT STYLES
+   ========================================================= */
 @media print {
   header,
   nav,
@@ -36,20 +104,6 @@
 
   body {
     background: white !important;
-    color: black !important;
-  }
-
-  .bg-zinc-900,
-  .bg-zinc-950 {
-    background: white !important;
-    border: 1px solid #ddd !important;
-    color: black !important;
-  }
-
-  .text-white,
-  .text-zinc-100,
-  .text-zinc-300,
-  .text-zinc-400 {
     color: black !important;
   }
 }
