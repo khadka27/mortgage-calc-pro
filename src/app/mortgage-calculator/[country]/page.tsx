@@ -6,6 +6,7 @@ import ChartsSection from '@/components/ChartsSection';
 import DisclaimerSection from '@/components/DisclaimerSection';
 import FAQSection from '@/components/FAQSection';
 import ResultsSummary from '@/components/ResultsSummary';
+import { APP_NAME, APP_URL } from '@/lib/env';
 import { calculateMortgage } from '@/lib/mortgage/calculator';
 import { SUPPORTED_COUNTRIES } from '@/lib/mortgage/countries';
 import { getCountryConfig } from '@/lib/mortgage/countryRules';
@@ -25,10 +26,10 @@ export async function generateMetadata({
   const config = getCountryConfig(countryCode);
 
   return {
-    title: `${config.countryName} Mortgage Calculator (${config.currencyCode}) | MortgagePro`,
+    title: `${config.countryName} Mortgage Calculator (${config.currencyCode}) | ${APP_NAME}`,
     description: `Calculate monthly mortgage payments, property taxes, interest rates, and CMHC/PMI insurance for home loans in ${config.countryName}. Generate complete amortization schedules.`,
     alternates: {
-      canonical: `https://mortgagepro.global/mortgage-calculator/${config.countryCode.toLowerCase()}`,
+      canonical: `${APP_URL}/mortgage-calculator/${config.countryCode.toLowerCase()}`,
     },
   };
 }
