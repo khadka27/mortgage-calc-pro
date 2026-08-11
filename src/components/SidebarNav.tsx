@@ -172,9 +172,9 @@ export default function SidebarNav({ isOpen, onToggle }: SidebarNavProps) {
       {/* Floating Morphing Sidebar Panel */}
       <aside
         className={`
-          hidden md:flex fixed top-24 left-4 z-50 flex-col rounded-3xl border shadow-2xl backdrop-blur-md
+          hidden md:flex fixed top-[118px] left-4 z-50 flex-col rounded-3xl border shadow-2xl backdrop-blur-md
           transition-all duration-300 ease-in-out overflow-hidden
-          ${isOpen ? 'w-80 max-h-[calc(100vh-120px)]' : 'w-14 h-auto'}
+          ${isOpen ? 'w-80 max-h-[calc(100vh-140px)]' : 'w-14 h-auto'}
         `}
         style={cardStyle}
       >
