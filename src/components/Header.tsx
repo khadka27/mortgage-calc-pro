@@ -28,20 +28,6 @@ export default function Header({
     { id: 'refinance' as const, label: 'Refinance', fullLabel: 'Refinance Comparison', icon: RefreshCw },
   ];
 
-  const desktopTabClass = (id: string) =>
-    `flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all duration-200 ${
-      activeTab === id
-        ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/25'
-        : 'hover:bg-slate-100 dark:hover:bg-zinc-800'
-    }`;
-
-  const mobileTabClass = (id: string) =>
-    `flex-1 min-w-0 flex items-center justify-center gap-1.5 py-2 px-2.5 text-xs font-semibold rounded-xl transition-all duration-200 ${
-      activeTab === id
-        ? 'bg-emerald-500 text-white shadow-sm'
-        : 'hover:bg-slate-100 dark:hover:bg-zinc-800'
-    }`;
-
   return (
     <header
       className="sticky top-0 z-40 backdrop-blur-md shadow-sm border-b transition-colors"
@@ -72,18 +58,37 @@ export default function Header({
             className="hidden md:flex items-center gap-1 p-1 rounded-xl border"
             style={{ backgroundColor: 'var(--bg-subtle)', borderColor: 'var(--border)' }}
           >
-            {navItems.map(({ id, fullLabel, icon: Icon }) => (
-              <button
-                key={id}
-                id={`tab-${id}`}
-                onClick={() => setActiveTab(id)}
-                className={desktopTabClass(id)}
-                style={activeTab !== id ? { color: 'var(--text-secondary)' } : {}}
-              >
-                <Icon className="w-4 h-4" />
-                {fullLabel}
-              </button>
-            ))}
+            {navItems.map(({ id, fullLabel, icon: Icon }) => {
+              const isActive = activeTab === id;
+              return (
+                <button
+                  key={id}
+                  id={`tab-${id}`}
+                  onClick={() => setActiveTab(id)}
+                  className="flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all duration-200"
+                  style={{
+                    backgroundColor: isActive ? '#10b981' : undefined,
+                    color: isActive ? '#ffffff' : 'var(--text-secondary)',
+                    boxShadow: isActive ? '0 4px 12px rgba(16, 185, 129, 0.25)' : undefined,
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isActive) {
+                      e.currentTarget.style.backgroundColor = 'var(--bg-card)';
+                      e.currentTarget.style.color = 'var(--text-primary)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isActive) {
+                      e.currentTarget.style.backgroundColor = '';
+                      e.currentTarget.style.color = 'var(--text-secondary)';
+                    }
+                  }}
+                >
+                  <Icon className="w-4 h-4" />
+                  {fullLabel}
+                </button>
+              );
+            })}
           </nav>
 
           {/* Right Section: Country Badge, Theme Toggle & Mobile Menu Trigger */}
@@ -119,21 +124,39 @@ export default function Header({
             className="flex items-center gap-1 p-1 rounded-xl border"
             style={{ backgroundColor: 'var(--bg-subtle)', borderColor: 'var(--border)' }}
           >
-            {navItems.map(({ id, label, icon: Icon }) => (
-              <button
-                key={id}
-                id={`tab-${id}-mobile`}
-                onClick={() => {
-                  setActiveTab(id);
-                  setMobileMenuOpen(false);
-                }}
-                className={mobileTabClass(id)}
-                style={activeTab !== id ? { color: 'var(--text-secondary)' } : {}}
-              >
-                <Icon className="w-3.5 h-3.5 shrink-0" />
-                <span className="truncate">{label}</span>
-              </button>
-            ))}
+            {navItems.map(({ id, label, icon: Icon }) => {
+              const isActive = activeTab === id;
+              return (
+                <button
+                  key={id}
+                  id={`tab-${id}-mobile`}
+                  onClick={() => {
+                    setActiveTab(id);
+                    setMobileMenuOpen(false);
+                  }}
+                  className="flex-1 min-w-0 flex items-center justify-center gap-1.5 py-2 px-2.5 text-xs font-semibold rounded-xl transition-all duration-200"
+                  style={{
+                    backgroundColor: isActive ? '#10b981' : undefined,
+                    color: isActive ? '#ffffff' : 'var(--text-secondary)',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isActive) {
+                      e.currentTarget.style.backgroundColor = 'var(--bg-card)';
+                      e.currentTarget.style.color = 'var(--text-primary)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isActive) {
+                      e.currentTarget.style.backgroundColor = '';
+                      e.currentTarget.style.color = 'var(--text-secondary)';
+                    }
+                  }}
+                >
+                  <Icon className="w-3.5 h-3.5 shrink-0" />
+                  <span className="truncate">{label}</span>
+                </button>
+              );
+            })}
           </nav>
         </div>
 
@@ -147,32 +170,35 @@ export default function Header({
               Calculator Modes & Tools
             </div>
             <div className="space-y-1">
-              {navItems.map(({ id, fullLabel, icon: Icon }) => (
-                <button
-                  key={id}
-                  type="button"
-                  onClick={() => {
-                    setActiveTab(id);
-                    setMobileMenuOpen(false);
-                  }}
-                  className="w-full flex items-center justify-between p-3 rounded-xl border text-xs font-semibold transition-colors"
-                  style={{
-                    backgroundColor: activeTab === id ? 'var(--accent-bg)' : 'var(--bg-subtle)',
-                    borderColor: activeTab === id ? 'var(--accent-border)' : 'var(--border)',
-                    color: activeTab === id ? 'var(--accent)' : 'var(--text-primary)',
-                  }}
-                >
-                  <div className="flex items-center gap-2.5">
-                    <Icon className="w-4 h-4" />
-                    <span>{fullLabel}</span>
-                  </div>
-                  {activeTab === id && (
-                    <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full" style={{ backgroundColor: 'var(--accent)', color: '#fff' }}>
-                      Active
-                    </span>
-                  )}
-                </button>
-              ))}
+              {navItems.map(({ id, fullLabel, icon: Icon }) => {
+                const isActive = activeTab === id;
+                return (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => {
+                      setActiveTab(id);
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full flex items-center justify-between p-3 rounded-xl border text-xs font-semibold transition-colors"
+                    style={{
+                      backgroundColor: isActive ? 'var(--accent-bg)' : 'var(--bg-subtle)',
+                      borderColor: isActive ? 'var(--accent-border)' : 'var(--border)',
+                      color: isActive ? 'var(--accent)' : 'var(--text-primary)',
+                    }}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <Icon className="w-4 h-4" />
+                      <span>{fullLabel}</span>
+                    </div>
+                    {isActive && (
+                      <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full" style={{ backgroundColor: 'var(--accent)', color: '#fff' }}>
+                        Active
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
 
             <div className="pt-2 border-t flex items-center justify-between px-2 text-xs" style={{ borderColor: 'var(--border)', color: 'var(--text-muted)' }}>
