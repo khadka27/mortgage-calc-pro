@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowDown, DollarSign, Sparkles, TrendingUp } from 'lucide-react';
+import { ArrowDown, Sparkles, TrendingUp } from 'lucide-react';
 import { useState } from 'react';
 
 import { formatCurrency } from '@/lib/mortgage/decimalUtils';
@@ -23,117 +23,101 @@ export default function ExtraPaymentsForm({
   monthsSaved,
   interestSaved,
 }: ExtraPaymentsFormProps) {
-  const [amount, setAmount] = useState<number | ''>(
-    extraPayments.find((ep) => ep.type === 'monthly')?.amount || ''
-  );
-  const [yearlyAmount, setYearlyAmount] = useState<number | ''>(
-    extraPayments.find((ep) => ep.type === 'yearly')?.amount || ''
-  );
+  const [amount, setAmount] = useState<number | ''>(extraPayments.find((ep) => ep.type === 'monthly')?.amount || '');
+  const [yearlyAmount, setYearlyAmount] = useState<number | ''>(extraPayments.find((ep) => ep.type === 'yearly')?.amount || '');
 
   const handleMonthlyChange = (val: number) => {
     setAmount(val);
     const updated = extraPayments.filter((ep) => ep.type !== 'monthly');
-    if (val > 0) {
-      updated.push({ amount: val, type: 'monthly' });
-    }
+    if (val > 0) updated.push({ amount: val, type: 'monthly' });
     onChangeExtraPayments(updated);
   };
 
   const handleYearlyChange = (val: number) => {
     setYearlyAmount(val);
     const updated = extraPayments.filter((ep) => ep.type !== 'yearly');
-    if (val > 0) {
-      updated.push({ amount: val, type: 'yearly' });
-    }
+    if (val > 0) updated.push({ amount: val, type: 'yearly' });
     onChangeExtraPayments(updated);
   };
 
   const yearsSaved = (monthsSaved / 12).toFixed(1);
+  const cardStyle: React.CSSProperties = { backgroundColor: 'var(--bg-card)', borderColor: 'var(--border)' };
+  const inputStyle: React.CSSProperties = { backgroundColor: 'var(--bg-input)', borderColor: 'var(--border)', color: 'var(--text-primary)' };
+  const inputCls = 'w-full rounded-xl pl-8 pr-4 py-2.5 text-sm font-semibold border focus:outline-none focus:ring-2 focus:ring-emerald-500/40 transition-all';
 
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 sm:p-6 shadow-xl space-y-5">
-      <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
-        <h3 className="text-base font-bold text-white flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-emerald-400" />
+    <div className="border rounded-2xl p-5 sm:p-6 shadow-sm space-y-5" style={cardStyle}>
+      <div className="flex items-center justify-between border-b pb-3" style={{ borderColor: 'var(--border)' }}>
+        <h3 className="text-base font-bold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+          <Sparkles className="w-4 h-4" style={{ color: 'var(--accent)' }} />
           Accelerated Payoff & Extra Payments
         </h3>
-        <span className="text-xs text-zinc-400">Simulate early mortgage freedom</span>
+        <span className="text-xs" style={{ color: 'var(--text-muted)' }}>Simulate early mortgage freedom</span>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Extra Monthly Payment */}
         <div>
-          <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">
+          <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-muted)' }}>
             Extra Monthly Payment ({currencySymbol})
           </label>
           <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 font-bold text-sm">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-bold pointer-events-none" style={{ color: 'var(--text-muted)' }}>
               {currencySymbol}
             </span>
             <input
-              type="number"
-              min="0"
-              step="50"
-              placeholder="e.g. 200"
+              type="number" min="0" step="50" placeholder="e.g. 200"
               value={amount || ''}
               onChange={(e) => handleMonthlyChange(Number(e.target.value))}
-              className="w-full bg-zinc-950 border border-zinc-700/80 rounded-xl pl-8 pr-4 py-2.5 text-sm text-white font-semibold focus:outline-none focus:border-emerald-500"
+              className={inputCls} style={inputStyle}
             />
           </div>
         </div>
 
-        {/* Extra Annual Bonus Payment */}
         <div>
-          <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">
+          <label className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-muted)' }}>
             Extra Annual Lump-Sum ({currencySymbol})
           </label>
           <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 font-bold text-sm">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-bold pointer-events-none" style={{ color: 'var(--text-muted)' }}>
               {currencySymbol}
             </span>
             <input
-              type="number"
-              min="0"
-              step="500"
-              placeholder="e.g. 2500"
+              type="number" min="0" step="500" placeholder="e.g. 2500"
               value={yearlyAmount || ''}
               onChange={(e) => handleYearlyChange(Number(e.target.value))}
-              className="w-full bg-zinc-950 border border-zinc-700/80 rounded-xl pl-8 pr-4 py-2.5 text-sm text-white font-semibold focus:outline-none focus:border-emerald-500"
+              className={inputCls} style={inputStyle}
             />
           </div>
         </div>
       </div>
 
-      {/* Savings Metric Cards */}
       {(monthsSaved > 0 || interestSaved > 0) ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-          <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4 flex items-center justify-between">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="rounded-xl p-4 flex items-center justify-between border"
+            style={{ backgroundColor: 'var(--accent-bg)', borderColor: 'var(--accent-border)' }}>
             <div>
-              <div className="text-xs text-emerald-400 font-semibold uppercase tracking-wider">
-                Total Interest Saved
-              </div>
-              <div className="text-2xl font-black text-white mt-0.5">
+              <div className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--accent)' }}>Total Interest Saved</div>
+              <div className="text-2xl font-black mt-0.5" style={{ color: 'var(--text-primary)' }}>
                 {formatCurrency(interestSaved, currencyCode)}
               </div>
             </div>
-            <TrendingUp className="w-8 h-8 text-emerald-400 opacity-80" />
+            <TrendingUp className="w-8 h-8 opacity-60" style={{ color: 'var(--accent)' }} />
           </div>
 
-          <div className="bg-cyan-500/10 border border-cyan-500/30 rounded-xl p-4 flex items-center justify-between">
+          <div className="rounded-xl p-4 flex items-center justify-between border"
+            style={{ backgroundColor: 'rgba(56, 189, 248, 0.08)', borderColor: 'rgba(56, 189, 248, 0.2)' }}>
             <div>
-              <div className="text-xs text-cyan-400 font-semibold uppercase tracking-wider">
-                Time Cut Off Loan
-              </div>
-              <div className="text-2xl font-black text-white mt-0.5">
+              <div className="text-xs font-bold uppercase tracking-wider" style={{ color: '#38bdf8' }}>Time Cut Off Loan</div>
+              <div className="text-2xl font-black mt-0.5" style={{ color: 'var(--text-primary)' }}>
                 {monthsSaved} Months ({yearsSaved} Yrs)
               </div>
             </div>
-            <ArrowDown className="w-8 h-8 text-cyan-400 opacity-80" />
+            <ArrowDown className="w-8 h-8 opacity-60" style={{ color: '#38bdf8' }} />
           </div>
         </div>
       ) : (
-        <div className="bg-zinc-950/60 border border-zinc-800 rounded-xl p-3.5 text-xs text-zinc-400 text-center">
-          Enter an extra payment amount above to calculate your interest savings and updated payoff date.
+        <div className="rounded-xl p-3.5 text-xs text-center border" style={{ backgroundColor: 'var(--bg-subtle)', borderColor: 'var(--border)', color: 'var(--text-muted)' }}>
+          Enter an extra payment above to calculate your interest savings and updated payoff date.
         </div>
       )}
     </div>
