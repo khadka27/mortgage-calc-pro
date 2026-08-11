@@ -12,20 +12,31 @@ interface RateSourceNoticeProps {
 export default function RateSourceNotice({ country, interestRate }: RateSourceNoticeProps) {
   const primarySource = country.supportedRateSources[0] || 'Central Bank Indicator';
 
+  const containerStyle: React.CSSProperties = {
+    backgroundColor: 'var(--bg-card)',
+    borderColor: 'var(--border)',
+    color: 'var(--text-muted)',
+  };
+  const badgeStyle: React.CSSProperties = {
+    backgroundColor: 'var(--bg-subtle)',
+    color: 'var(--text-secondary)',
+    borderColor: 'var(--border)',
+  };
+
   return (
-    <div className="bg-zinc-900/90 border border-zinc-800 rounded-xl p-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+    <div className="border rounded-xl p-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs" style={containerStyle}>
       <div className="flex items-center gap-2.5">
-        <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+        <ShieldCheck className="w-4 h-4 shrink-0" style={{ color: 'var(--accent)' }} />
         <div>
-          <span className="text-zinc-300 font-semibold">Interest Rate Data Benchmark: </span>
-          <span className="text-emerald-400 font-medium">{primarySource}</span>
-          <span className="text-zinc-500 ml-2">({interestRate}% current baseline rate)</span>
+          <span className="font-semibold" style={{ color: 'var(--text-secondary)' }}>Interest Rate Benchmark: </span>
+          <span className="font-medium" style={{ color: 'var(--accent)' }}>{primarySource}</span>
+          <span className="ml-2" style={{ color: 'var(--text-muted)' }}>({interestRate}% baseline)</span>
         </div>
       </div>
 
-      <div className="flex items-center gap-3 text-zinc-400 text-[11px] self-end sm:self-auto">
+      <div className="flex items-center gap-3 text-[11px] self-end sm:self-auto" style={{ color: 'var(--text-muted)' }}>
         <span>Last Updated: Aug 2026</span>
-        <span className="bg-zinc-800 px-2 py-0.5 rounded text-zinc-300 font-mono">Transparent Baseline</span>
+        <span className="px-2 py-0.5 rounded border font-mono" style={badgeStyle}>Transparent Baseline</span>
       </div>
     </div>
   );

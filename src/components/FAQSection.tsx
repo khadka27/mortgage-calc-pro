@@ -28,18 +28,24 @@ export default function FAQSection({ country }: FAQSectionProps) {
     },
   ];
 
+  const cardStyle: React.CSSProperties = { backgroundColor: 'var(--bg-card)', borderColor: 'var(--border)' };
+  const tileStyle: React.CSSProperties = { backgroundColor: 'var(--bg-subtle)', borderColor: 'var(--border)' };
+
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 sm:p-6 space-y-4">
-      <h3 className="text-base font-bold text-white flex items-center gap-2 border-b border-zinc-800 pb-3">
-        <HelpCircle className="w-5 h-5 text-emerald-400" />
+    <div className="border rounded-2xl p-5 sm:p-6 space-y-4" style={cardStyle}>
+      <h3
+        className="text-base font-bold flex items-center gap-2 border-b pb-3"
+        style={{ color: 'var(--text-primary)', borderColor: 'var(--border)' }}
+      >
+        <HelpCircle className="w-5 h-5" style={{ color: 'var(--accent)' }} />
         Frequently Asked Questions ({country.countryName})
       </h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {faqs.map((faq, idx) => (
-          <div key={idx} className="bg-zinc-950 p-4 rounded-xl border border-zinc-800/80 space-y-1.5">
-            <div className="text-xs font-bold text-emerald-400">{faq.q}</div>
-            <div className="text-xs text-zinc-300 leading-relaxed">{faq.a}</div>
+          <div key={idx} className="p-4 rounded-xl border space-y-1.5" style={tileStyle}>
+            <div className="text-xs font-bold" style={{ color: 'var(--accent)' }}>{faq.q}</div>
+            <div className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{faq.a}</div>
           </div>
         ))}
       </div>

@@ -21,19 +21,19 @@ export default function ShareAndExport({ input }: ShareAndExportProps) {
     params.set('rate', input.interestRate.toString());
     params.set('term', input.loanTermYears.toString());
     params.set('freq', input.paymentFrequency);
-
     return `${window.location.origin}${window.location.pathname}?${params.toString()}`;
   };
 
   const handleCopyLink = () => {
-    const url = generateShareUrl();
-    navigator.clipboard.writeText(url);
+    navigator.clipboard.writeText(generateShareUrl());
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
   };
 
-  const handlePrint = () => {
-    window.print();
+  const btnStyle: React.CSSProperties = {
+    backgroundColor: 'var(--bg-subtle)',
+    borderColor: 'var(--border)',
+    color: 'var(--text-secondary)',
   };
 
   return (
@@ -41,18 +41,20 @@ export default function ShareAndExport({ input }: ShareAndExportProps) {
       <button
         type="button"
         onClick={handleCopyLink}
-        className="flex items-center gap-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all border border-zinc-700 shadow-sm"
+        className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all border shadow-sm hover:opacity-80"
+        style={btnStyle}
       >
-        {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Share2 className="w-3.5 h-3.5 text-emerald-400" />}
-        {copied ? 'Link Copied!' : 'Share Calculation'}
+        {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Share2 className="w-3.5 h-3.5 text-emerald-500" />}
+        {copied ? 'Copied!' : 'Share'}
       </button>
 
       <button
         type="button"
-        onClick={handlePrint}
-        className="flex items-center gap-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all border border-zinc-700 shadow-sm"
+        onClick={() => window.print()}
+        className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all border shadow-sm hover:opacity-80"
+        style={btnStyle}
       >
-        <Printer className="w-3.5 h-3.5 text-emerald-400" />
+        <Printer className="w-3.5 h-3.5 text-emerald-500" />
         Print
       </button>
     </div>
