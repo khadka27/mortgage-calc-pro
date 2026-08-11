@@ -1,6 +1,6 @@
 'use client';
 
-import { Calculator, DollarSign, Globe, Home, Menu, RefreshCw, ShieldCheck, X } from 'lucide-react';
+import { Activity, Calculator, DollarSign, Globe, Home, Layers, Menu, RefreshCw, ShieldCheck, Sparkles, X } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 
@@ -22,195 +22,175 @@ export default function Header({
 }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const navItems = [
-    { id: 'calculator' as const, label: 'Mortgage', fullLabel: 'Mortgage Calculator', icon: Calculator },
-    { id: 'affordability' as const, label: 'Affordability', fullLabel: 'Home Affordability', icon: DollarSign },
-    { id: 'refinance' as const, label: 'Refinance', fullLabel: 'Refinance Comparison', icon: RefreshCw },
+  const mainNavItems = [
+    { id: 'calculator' as const, label: 'Mortgage Calcs', icon: Calculator },
+    { id: 'refinance' as const, label: 'Refinance', icon: RefreshCw },
+    { id: 'affordability' as const, label: 'Affordability', icon: DollarSign },
+  ];
+
+  const quickLinks = [
+    { label: 'Live Rates', href: '/live-rates', icon: Activity },
+    { label: 'Amortization', href: '#amortization-table', icon: Layers },
+    { label: 'Global Hub', href: '/mortgage-calculator', icon: Globe },
   ];
 
   return (
-    <header
-      className="sticky top-0 z-40 backdrop-blur-md shadow-sm border-b transition-colors"
-      style={{
-        backgroundColor: 'color-mix(in srgb, var(--bg-card) 92%, transparent)',
-        borderColor: 'var(--border)',
-      }}
-    >
-      <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-14 sm:h-16 gap-3">
-          {/* Logo & Brand */}
-          <Link href="/" className="flex items-center gap-2 group shrink-0">
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center shadow-md shadow-emerald-500/25 group-hover:scale-105 transition-transform duration-200">
-              <Home className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-white" strokeWidth={2.5} />
+    <header className="w-full sticky top-0 z-40 shadow-sm transition-colors border-b" style={{ borderColor: 'var(--border)' }}>
+      {/* Top Header Bar — Main Logo & Controls */}
+      <div
+        className="backdrop-blur-md border-b transition-colors"
+        style={{
+          backgroundColor: 'color-mix(in srgb, var(--bg-card) 95%, transparent)',
+          borderColor: 'var(--border)',
+        }}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+          {/* Left: Country Selector Pill */}
+          <div className="flex items-center gap-3">
+            <Link
+              href="/mortgage-calculator"
+              className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-xl border transition-all duration-200 hover:border-emerald-500/50"
+              style={{ backgroundColor: 'var(--bg-subtle)', borderColor: 'var(--border)', color: 'var(--text-secondary)' }}
+            >
+              <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
+              <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>{countryName}</span>
+              <span className="font-bold text-emerald-500 font-mono">({currencySymbol})</span>
+            </Link>
+          </div>
+
+          {/* Center: Large Brand Logo (matching MortgageCalculator.org design) */}
+          <Link href="/" className="flex items-center gap-2.5 group">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-emerald-500/25 group-hover:scale-105 transition-transform duration-200">
+              <Home className="w-5 h-5 text-white" strokeWidth={2.5} />
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="text-base sm:text-lg font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>
-                {APP_NAME.replace(' Global', '')}
+              <span className="text-xl sm:text-2xl font-black tracking-tight" style={{ color: 'var(--text-primary)' }}>
+                Mortgage<span className="text-emerald-500">Calculator</span>
               </span>
-              <span className="text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25 tracking-widest uppercase">
-                Global
+              <span className="hidden sm:inline-block text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25 tracking-widest uppercase">
+                Pro
               </span>
             </div>
           </Link>
 
-          {/* Desktop Navigation Tabs */}
-          <nav
-            className="hidden md:flex items-center gap-1 p-1 rounded-xl border"
-            style={{ backgroundColor: 'var(--bg-subtle)', borderColor: 'var(--border)' }}
-          >
-            {navItems.map(({ id, fullLabel, icon: Icon }) => {
-              const isActive = activeTab === id;
-              return (
-                <button
-                  key={id}
-                  id={`tab-${id}`}
-                  onClick={() => setActiveTab(id)}
-                  className="flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all duration-200"
-                  style={{
-                    backgroundColor: isActive ? '#10b981' : undefined,
-                    color: isActive ? '#ffffff' : 'var(--text-secondary)',
-                    boxShadow: isActive ? '0 4px 12px rgba(16, 185, 129, 0.25)' : undefined,
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!isActive) {
-                      e.currentTarget.style.backgroundColor = 'var(--bg-card)';
-                      e.currentTarget.style.color = 'var(--text-primary)';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isActive) {
-                      e.currentTarget.style.backgroundColor = '';
-                      e.currentTarget.style.color = 'var(--text-secondary)';
-                    }
-                  }}
-                >
-                  <Icon className="w-4 h-4" />
-                  {fullLabel}
-                </button>
-              );
-            })}
-          </nav>
-
-          {/* Right Section: Country Badge, Theme Toggle & Mobile Menu Trigger */}
+          {/* Right: Theme Toggle & Mobile Trigger */}
           <div className="flex items-center gap-2 shrink-0">
-            {/* Country Pill */}
-            <div
-              className="flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-xl border font-medium"
-              style={{ backgroundColor: 'var(--bg-subtle)', borderColor: 'var(--border)', color: 'var(--text-secondary)' }}
-            >
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-              <span className="hidden sm:inline font-medium">{countryName}</span>
-              <span className="font-bold text-emerald-500">({currencySymbol})</span>
-            </div>
-
             <ThemeToggleButton />
 
-            {/* Mobile Drawer Trigger */}
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="md:hidden p-2 rounded-xl border transition-colors"
               style={{ backgroundColor: 'var(--bg-subtle)', borderColor: 'var(--border)', color: 'var(--text-primary)' }}
-              aria-label="Toggle mobile menu"
+              aria-label="Toggle Navigation"
             >
-              {mobileMenuOpen ? <X className="w-4.5 h-4.5" /> : <Menu className="w-4.5 h-4.5" />}
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
         </div>
+      </div>
 
-        {/* Mobile Navigation Segmented Control Bar */}
-        <div className="md:hidden border-t py-1.5" style={{ borderColor: 'var(--border)' }}>
-          <nav
-            className="flex items-center gap-1 p-1 rounded-xl border"
-            style={{ backgroundColor: 'var(--bg-subtle)', borderColor: 'var(--border)' }}
-          >
-            {navItems.map(({ id, label, icon: Icon }) => {
-              const isActive = activeTab === id;
+      {/* Sub-Navbar Bar (Matching user screenshot: Dark bar with + separated links) */}
+      <nav className="bg-slate-900 dark:bg-zinc-950 text-slate-100 border-b border-slate-800 dark:border-zinc-800 py-2.5 px-4 hidden md:block">
+        <div className="max-w-7xl mx-auto flex items-center justify-center gap-3 text-xs font-bold tracking-wide">
+          {/* Main Mode Tabs */}
+          {mainNavItems.map((item, idx) => {
+            const isActive = activeTab === item.id;
+            return (
+              <div key={item.id} className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab(item.id)}
+                  className={`flex items-center gap-1.5 px-3 py-1 rounded-lg transition-all duration-200 cursor-pointer ${
+                    isActive
+                      ? 'bg-emerald-500 text-white font-bold shadow-md shadow-emerald-500/30'
+                      : 'text-slate-300 hover:text-white hover:bg-slate-800 dark:hover:bg-zinc-800'
+                  }`}
+                >
+                  <item.icon className="w-3.5 h-3.5" />
+                  {item.label}
+                </button>
+                <span className="text-slate-600 font-normal">+</span>
+              </div>
+            );
+          })}
+
+          {/* Additional Quick Navigation Links */}
+          {quickLinks.map((link, idx) => (
+            <div key={link.label} className="flex items-center gap-3">
+              <a
+                href={link.href}
+                className="flex items-center gap-1.5 px-2.5 py-1 text-slate-300 hover:text-white hover:bg-slate-800 dark:hover:bg-zinc-800 rounded-lg transition-all"
+              >
+                <link.icon className="w-3.5 h-3.5 text-emerald-400" />
+                {link.label}
+              </a>
+              {idx < quickLinks.length - 1 && <span className="text-slate-600 font-normal">+</span>}
+            </div>
+          ))}
+        </div>
+      </nav>
+
+      {/* Mobile Drawer Menu */}
+      {mobileMenuOpen && (
+        <div
+          className="md:hidden border-b p-4 space-y-4 animate-in fade-in slide-in-from-top-2 duration-200 shadow-xl"
+          style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border)' }}
+        >
+          <div className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
+            Calculator Modes
+          </div>
+          <div className="space-y-1.5">
+            {mainNavItems.map((item) => {
+              const isActive = activeTab === item.id;
               return (
                 <button
-                  key={id}
-                  id={`tab-${id}-mobile`}
+                  key={item.id}
+                  type="button"
                   onClick={() => {
-                    setActiveTab(id);
+                    setActiveTab(item.id);
                     setMobileMenuOpen(false);
                   }}
-                  className="flex-1 min-w-0 flex items-center justify-center gap-1.5 py-2 px-2.5 text-xs font-semibold rounded-xl transition-all duration-200"
+                  className="w-full flex items-center justify-between p-3 rounded-xl border text-xs font-bold transition-all"
                   style={{
-                    backgroundColor: isActive ? '#10b981' : undefined,
-                    color: isActive ? '#ffffff' : 'var(--text-secondary)',
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!isActive) {
-                      e.currentTarget.style.backgroundColor = 'var(--bg-card)';
-                      e.currentTarget.style.color = 'var(--text-primary)';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isActive) {
-                      e.currentTarget.style.backgroundColor = '';
-                      e.currentTarget.style.color = 'var(--text-secondary)';
-                    }
+                    backgroundColor: isActive ? 'var(--accent-bg)' : 'var(--bg-subtle)',
+                    borderColor: isActive ? 'var(--accent-border)' : 'var(--border)',
+                    color: isActive ? 'var(--accent)' : 'var(--text-primary)',
                   }}
                 >
-                  <Icon className="w-3.5 h-3.5 shrink-0" />
-                  <span className="truncate">{label}</span>
+                  <div className="flex items-center gap-2.5">
+                    <item.icon className="w-4 h-4" />
+                    <span>{item.label}</span>
+                  </div>
+                  {isActive && (
+                    <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-emerald-500 text-white">
+                      Active
+                    </span>
+                  )}
                 </button>
               );
             })}
-          </nav>
-        </div>
-
-        {/* Mobile Drawer Overlay */}
-        {mobileMenuOpen && (
-          <div
-            className="md:hidden border-t py-4 px-2 space-y-3 animate-in fade-in slide-in-from-top-2 duration-200"
-            style={{ borderColor: 'var(--border)' }}
-          >
-            <div className="text-xs font-bold uppercase tracking-wider px-2" style={{ color: 'var(--text-muted)' }}>
-              Calculator Modes & Tools
-            </div>
-            <div className="space-y-1">
-              {navItems.map(({ id, fullLabel, icon: Icon }) => {
-                const isActive = activeTab === id;
-                return (
-                  <button
-                    key={id}
-                    type="button"
-                    onClick={() => {
-                      setActiveTab(id);
-                      setMobileMenuOpen(false);
-                    }}
-                    className="w-full flex items-center justify-between p-3 rounded-xl border text-xs font-semibold transition-colors"
-                    style={{
-                      backgroundColor: isActive ? 'var(--accent-bg)' : 'var(--bg-subtle)',
-                      borderColor: isActive ? 'var(--accent-border)' : 'var(--border)',
-                      color: isActive ? 'var(--accent)' : 'var(--text-primary)',
-                    }}
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <Icon className="w-4 h-4" />
-                      <span>{fullLabel}</span>
-                    </div>
-                    {isActive && (
-                      <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full" style={{ backgroundColor: 'var(--accent)', color: '#fff' }}>
-                        Active
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-
-            <div className="pt-2 border-t flex items-center justify-between px-2 text-xs" style={{ borderColor: 'var(--border)', color: 'var(--text-muted)' }}>
-              <div className="flex items-center gap-1.5">
-                <Globe className="w-3.5 h-3.5 text-emerald-500" />
-                <span>Selected: <strong style={{ color: 'var(--text-primary)' }}>{countryName}</strong></span>
-              </div>
-              <span className="font-mono text-[11px] font-bold text-emerald-500">{currencySymbol}</span>
-            </div>
           </div>
-        )}
-      </div>
+
+          <div className="text-xs font-bold uppercase tracking-wider pt-2 border-t" style={{ borderColor: 'var(--border)', color: 'var(--text-muted)' }}>
+            Quick Links
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            {quickLinks.map((link) => (
+              <a
+                key={link.label}
+                href={link.href}
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-2 p-2.5 rounded-xl border text-xs font-medium transition-colors"
+                style={{ backgroundColor: 'var(--bg-subtle)', borderColor: 'var(--border)', color: 'var(--text-primary)' }}
+              >
+                <link.icon className="w-3.5 h-3.5 text-emerald-500" />
+                <span>{link.label}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
     </header>
   );
 }

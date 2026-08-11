@@ -15,10 +15,12 @@ export interface LiveMortgageRate {
   asOf: string;
   lowestInstitution?: string;
   lowestState?: string;
+  category?: 'mortgage' | 'auto' | 'personal' | 'recreational';
 }
 
 export interface LiveRatesPayload {
   rates: LiveMortgageRate[];
+  allRates: LiveMortgageRate[];
   totalInstitutions: number;
   totalRates: number;
   generatedAt: string;
@@ -27,7 +29,8 @@ export interface LiveRatesPayload {
 
 interface UseLiveRatesResult {
   rates: LiveMortgageRate[];
-  meta: Omit<LiveRatesPayload, 'rates'> | null;
+  allRates: LiveMortgageRate[];
+  meta: Omit<LiveRatesPayload, 'rates' | 'allRates'> | null;
   loading: boolean;
   error: string | null;
   refetch: () => void;
@@ -65,19 +68,19 @@ export function useLiveRates(): UseLiveRatesResult {
     return () => { cancelled = true; };
   }, [tick]);
 
-  const { rates = [], ...meta } = data ?? {};
+  const { rates = [], allRates = [], ...meta } = data ?? {};
 
   return {
     rates,
-    meta: data ? (meta as Omit<LiveRatesPayload, 'rates'>) : null,
+    allRates,
+    meta: data ? (meta as Omit<LiveRatesPayload, 'rates' | 'allRates'>) : null,
     loading,
     error,
     refetch: () => setTick((t) => t + 1),
   };
 }
 
-/** Convenience: return just the rate for a specific product type */
 export function useRateByProduct(productType: string): LiveMortgageRate | null {
-  const { rates } = useLiveRates();
-  return rates.find((r) => r.productType === productType) ?? null;
+  const { allRates } = useLiveRates();
+  return allRates.find((r) => r.productType === productType) ?? null;
 }

@@ -28,8 +28,7 @@ interface RateApiResponse {
   generated_at: string;
 }
 
-// Only expose these mortgage product types to the client
-const MORTGAGE_PRODUCTS = ['mortgage_15yr', 'mortgage_30yr', 'mortgage_arm'];
+const MORTGAGE_PRODUCTS = ['mortgage_15yr', 'mortgage_30yr', 'mortgage_arm', 'heloc'];
 
 export interface LiveMortgageRate {
   productType: string;
@@ -44,14 +43,23 @@ export interface LiveMortgageRate {
   asOf: string;
   lowestInstitution?: string;
   lowestState?: string;
+  category: 'mortgage' | 'auto' | 'personal' | 'recreational';
 }
 
 export interface LiveRatesPayload {
   rates: LiveMortgageRate[];
+  allRates: LiveMortgageRate[];
   totalInstitutions: number;
   totalRates: number;
   generatedAt: string;
   cachedAt: string;
+}
+
+function getCategory(productType: string): 'mortgage' | 'auto' | 'personal' | 'recreational' {
+  if (productType.includes('mortgage') || productType.includes('heloc')) return 'mortgage';
+  if (productType.includes('auto') || productType.includes('motorcycle')) return 'auto';
+  if (productType.includes('personal') || productType.includes('credit_card') || productType.includes('student')) return 'personal';
+  return 'recreational';
 }
 
 export async function GET() {
@@ -68,7 +76,7 @@ export async function GET() {
   try {
     const res = await fetch(apiUrl, {
       headers: { 'X-API-Key': apiKey },
-      next: { revalidate: 3600 }, // Next.js fetch cache — 1 hour
+      next: { revalidate: 3600 },
     });
 
     if (!res.ok) {
@@ -81,26 +89,27 @@ export async function GET() {
 
     const data: RateApiResponse = await res.json();
 
-    // Filter to mortgage products only and reshape for the client
-    const rates: LiveMortgageRate[] = data.benchmarks
-      .filter((b) => MORTGAGE_PRODUCTS.includes(b.product_type))
-      .map((b) => ({
-        productType: b.product_type,
-        displayName: b.display_name,
-        minRate: b.min_rate,
-        medianRate: b.median_apr, // median_apr is the best single-rate signal
-        maxRate: b.max_rate,
-        minApr: b.min_apr,
-        medianApr: b.median_apr,
-        maxApr: b.max_apr,
-        count: b.count,
-        asOf: b.as_of,
-        lowestInstitution: b.min_apr_institution,
-        lowestState: b.min_apr_state,
-      }));
+    const allMappedRates: LiveMortgageRate[] = data.benchmarks.map((b) => ({
+      productType: b.product_type,
+      displayName: b.display_name,
+      minRate: b.min_rate,
+      medianRate: b.median_apr,
+      maxRate: b.max_rate,
+      minApr: b.min_apr,
+      medianApr: b.median_apr,
+      maxApr: b.max_apr,
+      count: b.count,
+      asOf: b.as_of,
+      lowestInstitution: b.min_apr_institution,
+      lowestState: b.min_apr_state,
+      category: getCategory(b.product_type),
+    }));
+
+    const rates = allMappedRates.filter((r) => MORTGAGE_PRODUCTS.includes(r.productType));
 
     const payload: LiveRatesPayload = {
       rates,
+      allRates: allMappedRates,
       totalInstitutions: data.summary.total_institutions,
       totalRates: data.summary.total_rates,
       generatedAt: data.generated_at,
