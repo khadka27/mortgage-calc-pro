@@ -102,7 +102,10 @@ function MortgageAppContent() {
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         {/* Country Selector & Share Bar */}
-        <div className="flex flex-col md:flex-row items-stretch md:items-end justify-between gap-4 bg-zinc-900/60 p-4 rounded-2xl border border-zinc-800">
+        <div
+          className="flex flex-col md:flex-row items-stretch md:items-end justify-between gap-4 p-4 rounded-2xl border"
+          style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border)' }}
+        >
           <div className="flex-1 max-w-md">
             <CountrySelector
               selectedCountry={selectedCountry}
