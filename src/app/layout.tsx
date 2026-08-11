@@ -58,6 +58,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         style={{ backgroundColor: 'var(--bg-page)', color: 'var(--text-primary)' }}
         suppressHydrationWarning
       >
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.addEventListener('unhandledrejection', function(event) {
+                if (event.reason && event.reason.stack && event.reason.stack.includes('chrome-extension://')) {
+                  event.preventDefault();
+                }
+              });
+            `,
+          }}
+        />
         {/* Google Analytics — only loads when GA_MEASUREMENT_ID is set */}
         {GA_MEASUREMENT_ID && (
           <>

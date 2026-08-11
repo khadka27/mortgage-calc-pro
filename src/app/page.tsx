@@ -115,7 +115,7 @@ function MortgageAppContent() {
           </div>
 
           <div className="flex items-center justify-between sm:justify-end gap-3">
-            <ShareAndExport input={input} />
+            <ShareAndExport input={input} result={calculationResult} country={selectedCountry} />
           </div>
         </div>
 

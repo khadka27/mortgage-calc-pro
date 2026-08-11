@@ -2,6 +2,14 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  allowedDevOrigins: [
+    '192.168.1.128',
+    '192.168.1.128:3000',
+    '192.168.1.69',
+    '192.168.1.69:3000',
+    'localhost:3000',
+    '127.0.0.1:3000',
+  ],
 
   // Expose env vars to the client — NEXT_PUBLIC_* are exposed automatically,
   // but listing them here makes them visible in IDE intellisense and validates
