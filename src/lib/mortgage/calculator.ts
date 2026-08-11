@@ -2,7 +2,7 @@ import Decimal from 'decimal.js';
 
 import { generateAmortizationSchedule } from './amortization';
 import { getCountryConfig } from './countryRules';
-import { Decimal, roundFinancial, safeDiv, toDec } from './decimalUtils';
+import { roundFinancial, safeDiv, toDec } from './decimalUtils';
 import { calculateHomeInsurance, calculateLTV, calculateMortgageInsurance } from './insurance';
 import { calculatePeriodicPayment, getPaymentsPerYear } from './interest';
 import { calculatePropertyTax } from './taxes';

@@ -1,7 +1,7 @@
 import Decimal from 'decimal.js';
 
 import { getCountryConfig } from './countryRules';
-import { Decimal, roundFinancial, safeDiv, toDec } from './decimalUtils';
+import { roundFinancial, safeDiv, toDec } from './decimalUtils';
 import { calculatePeriodicPayment } from './interest';
 import { RefinanceInput, RefinanceResult } from './types';
 
