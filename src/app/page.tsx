@@ -11,6 +11,7 @@ import DisclaimerSection from '@/components/DisclaimerSection';
 import ExtraPaymentsForm from '@/components/ExtraPaymentsForm';
 import FAQSection from '@/components/FAQSection';
 import Header from '@/components/Header';
+import LiveRateBanner from '@/components/LiveRateBanner';
 import MortgageForm from '@/components/MortgageForm';
 import RateSourceNotice from '@/components/RateSourceNotice';
 import RefinanceCalculator from '@/components/RefinanceCalculator';
@@ -123,7 +124,17 @@ function MortgageAppContent() {
 
         {/* Tabbed Modes */}
         {activeTab === 'calculator' && (
-          <div className="space-y-8">
+          <div className="space-y-6">
+            {/* Live Rate Banner — US only (rateapi.dev covers US lenders) */}
+            {selectedCountry.countryCode === 'US' && (
+              <LiveRateBanner
+                activeLoanTermYears={input.loanTermYears}
+                onApplyRate={(rate) =>
+                  setInput((prev) => ({ ...prev, interestRate: rate }))
+                }
+              />
+            )}
+
             {/* Input Form & Results Column Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
               <div className="lg:col-span-6">
