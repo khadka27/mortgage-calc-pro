@@ -83,6 +83,8 @@ export interface CalculationInput {
   paymentFrequency: PaymentFrequency;
   mortgageTypeId?: string;
   startDate?: string; // ISO YYYY-MM
+  startDateMonth?: number; // 1 - 12
+  startDateYear?: number; // e.g. 2026
   propertyTaxAnnual?: number;
   propertyTaxPercentage?: number;
   homeInsuranceAnnual?: number;
@@ -157,6 +159,10 @@ export interface CalculationResult {
   totalPrincipalPaid: number;
   totalInterestPaid: number;
   totalCostOfLoan: number;
+  annualPaymentAmount: number;
+  totalPropertyTaxPaid: number;
+  totalHomeInsurancePaid: number;
+  totalMortgageInsurancePaid: number;
   interestToPrincipalRatio: number;
   payoffDate: string;
 

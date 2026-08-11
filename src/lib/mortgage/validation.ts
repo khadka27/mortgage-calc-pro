@@ -33,6 +33,8 @@ export const CalculationInputSchema = z
     paymentFrequency: PaymentFrequencySchema.default('monthly'),
     mortgageTypeId: z.string().optional(),
     startDate: z.string().optional(),
+    startDateMonth: z.number().min(1).max(12).optional(),
+    startDateYear: z.number().min(1900).max(2100).optional(),
     propertyTaxAnnual: z.number().min(0).optional(),
     propertyTaxPercentage: z.number().min(0).max(100).optional(),
     homeInsuranceAnnual: z.number().min(0).optional(),

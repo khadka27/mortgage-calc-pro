@@ -270,6 +270,45 @@ export default function MortgageForm({
           />
         </div>
 
+        {/* Start Date: Month & Year */}
+        <div>
+          <label className={labelCls} style={{ color: 'var(--text-muted)' }}>Loan Start Date</label>
+          <div className="grid grid-cols-2 gap-2">
+            <CustomSelect
+              id="select-start-month"
+              value={String(input.startDateMonth || (new Date().getMonth() + 1))}
+              onChange={(v) => {
+                const m = Number(v);
+                const y = input.startDateYear || new Date().getFullYear();
+                const isoDate = `${y}-${String(m).padStart(2, '0')}`;
+                onChangeInput({ ...input, startDateMonth: m, startDate: isoDate });
+              }}
+              options={[
+                { value: '1', label: 'Jan' }, { value: '2', label: 'Feb' },
+                { value: '3', label: 'Mar' }, { value: '4', label: 'Apr' },
+                { value: '5', label: 'May' }, { value: '6', label: 'Jun' },
+                { value: '7', label: 'Jul' }, { value: '8', label: 'Aug' },
+                { value: '9', label: 'Sep' }, { value: '10', label: 'Oct' },
+                { value: '11', label: 'Nov' }, { value: '12', label: 'Dec' },
+              ]}
+            />
+            <CustomSelect
+              id="select-start-year"
+              value={String(input.startDateYear || new Date().getFullYear())}
+              onChange={(v) => {
+                const y = Number(v);
+                const m = input.startDateMonth || (new Date().getMonth() + 1);
+                const isoDate = `${y}-${String(m).padStart(2, '0')}`;
+                onChangeInput({ ...input, startDateYear: y, startDate: isoDate });
+              }}
+              options={Array.from({ length: 31 }, (_, i) => {
+                const yr = new Date().getFullYear() + i;
+                return { value: String(yr), label: String(yr) };
+              })}
+            />
+          </div>
+        </div>
+
         {/* Mortgage Type */}
         <div className="sm:col-span-2">
           <label className={labelCls} style={{ color: 'var(--text-muted)' }}>

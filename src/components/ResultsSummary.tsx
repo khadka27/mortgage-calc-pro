@@ -122,11 +122,15 @@ export default function ResultsSummary({ result }: ResultsSummaryProps) {
       </div>
 
       {/* Loan Overview Grid */}
-      <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-2.5 border-t pt-5" style={{ borderColor: 'var(--border)' }}>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 border-t pt-5" style={{ borderColor: 'var(--border)' }}>
         {[
+          { label: 'Down Payment Amount', value: `${formatCurrency(result.downPayment, currencyCode)} (${result.downPaymentPct}%)`, accent: false },
           { label: 'Total Loan Amount', value: formatCurrency(loanAmount, currencyCode), accent: false },
           { label: 'Total Interest Paid', value: formatCurrency(totalInterestPaid, currencyCode), accent: true },
           { label: 'Total Cost of Loan', value: formatCurrency(totalCostOfLoan, currencyCode), accent: false },
+          { label: 'Annual Payment Amount', value: formatCurrency(result.annualPaymentAmount, currencyCode), accent: false },
+          { label: `Total of ${result.totalNumberOfPayments} Payments`, value: formatCurrency(result.totalCostOfLoan, currencyCode), accent: false },
+          { label: 'Total Home Insurance', value: formatCurrency(result.totalHomeInsurancePaid, currencyCode), accent: false },
           { label: 'Payoff Date', value: payoffDate, accent: true },
         ].map(({ label, value, accent }) => (
           <div key={label} className="p-3 sm:p-3.5 rounded-xl border min-w-0 flex flex-col justify-between" style={tileStyle}>

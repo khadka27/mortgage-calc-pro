@@ -11,6 +11,7 @@ import DisclaimerSection from '@/components/DisclaimerSection';
 import ExtraPaymentsForm from '@/components/ExtraPaymentsForm';
 import FAQSection from '@/components/FAQSection';
 import Header from '@/components/Header';
+import LenderComparison from '@/components/LenderComparison';
 import LiveRateBanner from '@/components/LiveRateBanner';
 import MortgageForm from '@/components/MortgageForm';
 import RateSourceNotice from '@/components/RateSourceNotice';
@@ -169,6 +170,14 @@ function MortgageAppContent() {
             {/* Amortization Table */}
             <AmortizationTable
               summary={calculationResult.amortizationSchedule}
+              currencyCode={selectedCountry.currencyCode}
+              currencySymbol={selectedCountry.currencySymbol}
+            />
+
+            {/* Lender Rate Comparison Marketplace */}
+            <LenderComparison
+              propertyPrice={input.propertyPrice}
+              loanAmount={calculationResult.loanAmount}
               currencyCode={selectedCountry.currencyCode}
               currencySymbol={selectedCountry.currencySymbol}
             />

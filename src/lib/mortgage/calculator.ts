@@ -163,6 +163,10 @@ export function calculateMortgage(input: CalculationInput): CalculationResult {
     totalPrincipalPaid: roundFinancial(totalPrincipalPaid, decimals),
     totalInterestPaid: roundFinancial(totalInterestPaid, decimals),
     totalCostOfLoan: roundFinancial(totalCostOfLoan, decimals),
+    annualPaymentAmount: roundFinancial(totalMonthlyHousingPayment.mul(12), decimals),
+    totalPropertyTaxPaid: roundFinancial(toDec(taxResult.periodicTax).mul(totalNumberOfPayments), decimals),
+    totalHomeInsurancePaid: roundFinancial(toDec(insuranceResult.periodicInsurance).mul(totalNumberOfPayments), decimals),
+    totalMortgageInsurancePaid: roundFinancial(toDec(pmiResult.periodicPMI).mul(totalNumberOfPayments), decimals),
     interestToPrincipalRatio: roundFinancial(interestToPrincipalRatio, 2),
     payoffDate: amortizationSummary.payoffDate,
 
