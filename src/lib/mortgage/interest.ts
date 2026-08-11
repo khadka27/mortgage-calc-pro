@@ -1,6 +1,6 @@
 import Decimal from 'decimal.js';
 
-import { Decimal, safeDiv, toDec } from './decimalUtils';
+import { safeDiv, toDec } from './decimalUtils';
 import { PaymentFrequency } from './types';
 
 /**
