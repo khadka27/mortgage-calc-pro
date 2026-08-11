@@ -1,69 +1,182 @@
-import Image from "next/image";
+'use client';
+
+import { useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useMemo, useState } from 'react';
+
+import AffordabilityCalculator from '@/components/AffordabilityCalculator';
+import AmortizationTable from '@/components/AmortizationTable';
+import ChartsSection from '@/components/ChartsSection';
+import CountrySelector from '@/components/CountrySelector';
+import DisclaimerSection from '@/components/DisclaimerSection';
+import ExtraPaymentsForm from '@/components/ExtraPaymentsForm';
+import FAQSection from '@/components/FAQSection';
+import Header from '@/components/Header';
+import MortgageForm from '@/components/MortgageForm';
+import RateSourceNotice from '@/components/RateSourceNotice';
+import RefinanceCalculator from '@/components/RefinanceCalculator';
+import ResultsSummary from '@/components/ResultsSummary';
+import ShareAndExport from '@/components/ShareAndExport';
+import { calculateMortgage } from '@/lib/mortgage/calculator';
+import { getCountryConfig } from '@/lib/mortgage/countryRules';
+import { CalculationInput, CountryConfig, ExtraPaymentInput } from '@/lib/mortgage/types';
+
+function MortgageAppContent() {
+  const searchParams = useSearchParams();
+
+  // Initial Country detection from URL query or default US
+  const initialCountryCode = searchParams.get('country') || 'US';
+  const [selectedCountry, setSelectedCountry] = useState<CountryConfig>(
+    getCountryConfig(initialCountryCode)
+  );
+
+  const [activeTab, setActiveTab] = useState<'calculator' | 'affordability' | 'refinance'>(
+    'calculator'
+  );
+
+  // Form input state
+  const [input, setInput] = useState<CalculationInput>(() => {
+    const country = getCountryConfig(initialCountryCode);
+    const defaultPrice = country.countryCode === 'JP' ? 45000000 : country.countryCode === 'NP' || country.countryCode === 'IN' ? 10000000 : 400000;
+    const defaultDown = defaultPrice * (country.minimumDownPaymentPct / 100 || 0.2);
+
+    return {
+      countryCode: country.countryCode,
+      propertyPrice: Number(searchParams.get('price')) || defaultPrice,
+      downPayment: Number(searchParams.get('down')) || defaultDown,
+      interestRate: Number(searchParams.get('rate')) || country.defaultInterestRate,
+      loanTermYears: Number(searchParams.get('term')) || country.defaultLoanTerm,
+      paymentFrequency: (searchParams.get('freq') as any) || country.paymentFrequencyOptions[0] || 'monthly',
+      mortgageTypeId: country.mortgageTypes[0]?.id,
+      extraPayments: [],
+    };
+  });
+
+  // Switch country handler
+  const handleCountryChange = (newCountry: CountryConfig) => {
+    setSelectedCountry(newCountry);
+    const defaultPrice = newCountry.countryCode === 'JP' ? 45000000 : newCountry.countryCode === 'NP' || newCountry.countryCode === 'IN' ? 10000000 : 400000;
+    const defaultDown = defaultPrice * (newCountry.minimumDownPaymentPct / 100 || 0.2);
+
+    setInput({
+      countryCode: newCountry.countryCode,
+      propertyPrice: defaultPrice,
+      downPayment: defaultDown,
+      interestRate: newCountry.defaultInterestRate,
+      loanTermYears: newCountry.defaultLoanTerm,
+      paymentFrequency: newCountry.paymentFrequencyOptions[0] || 'monthly',
+      mortgageTypeId: newCountry.mortgageTypes[0]?.id,
+      extraPayments: [],
+    });
+  };
+
+  const handleReset = () => {
+    handleCountryChange(selectedCountry);
+  };
+
+  // Perform calculation locally using testable decimal arithmetic calculation engine
+  const calculationResult = useMemo(() => {
+    try {
+      return calculateMortgage(input);
+    } catch {
+      // Safe fallback if temporary input editing creates intermediate state
+      return calculateMortgage({
+        ...input,
+        propertyPrice: Math.max(1, input.propertyPrice),
+        downPayment: Math.min(input.downPayment, input.propertyPrice - 1),
+      });
+    }
+  }, [input]);
+
+  return (
+    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col font-sans">
+      <Header
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        countryName={selectedCountry.countryName}
+        currencySymbol={selectedCountry.currencySymbol}
+      />
+
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        {/* Country Selector & Share Bar */}
+        <div className="flex flex-col md:flex-row items-stretch md:items-end justify-between gap-4 bg-zinc-900/60 p-4 rounded-2xl border border-zinc-800">
+          <div className="flex-1 max-w-md">
+            <CountrySelector
+              selectedCountry={selectedCountry}
+              onSelectCountry={handleCountryChange}
+            />
+          </div>
+
+          <div className="flex items-center justify-between sm:justify-end gap-3">
+            <ShareAndExport input={input} />
+          </div>
+        </div>
+
+        {/* Rate Transparency Banner */}
+        <RateSourceNotice country={selectedCountry} interestRate={input.interestRate} />
+
+        {/* Tabbed Modes */}
+        {activeTab === 'calculator' && (
+          <div className="space-y-8">
+            {/* Input Form & Results Column Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+              <div className="lg:col-span-6">
+                <MortgageForm
+                  country={selectedCountry}
+                  input={input}
+                  onChangeInput={setInput}
+                  onReset={handleReset}
+                />
+              </div>
+
+              <div className="lg:col-span-6">
+                <ResultsSummary result={calculationResult} />
+              </div>
+            </div>
+
+            {/* Interactive Charts Section (5 Recharts views) */}
+            <ChartsSection result={calculationResult} />
+
+            {/* Accelerated Amortization Extra Payment Simulator */}
+            <ExtraPaymentsForm
+              extraPayments={input.extraPayments || []}
+              onChangeExtraPayments={(payments: ExtraPaymentInput[]) =>
+                setInput({ ...input, extraPayments: payments })
+              }
+              currencyCode={selectedCountry.currencyCode}
+              currencySymbol={selectedCountry.currencySymbol}
+              monthsSaved={calculationResult.monthsSaved}
+              interestSaved={calculationResult.interestSaved}
+            />
+
+            {/* Amortization Table */}
+            <AmortizationTable
+              summary={calculationResult.amortizationSchedule}
+              currencyCode={selectedCountry.currencyCode}
+              currencySymbol={selectedCountry.currencySymbol}
+            />
+          </div>
+        )}
+
+        {activeTab === 'affordability' && (
+          <AffordabilityCalculator country={selectedCountry} />
+        )}
+
+        {activeTab === 'refinance' && (
+          <RefinanceCalculator country={selectedCountry} />
+        )}
+
+        {/* Country Specific FAQs & Legal Disclaimer */}
+        <FAQSection country={selectedCountry} />
+        <DisclaimerSection country={selectedCountry} />
+      </main>
+    </div>
+  );
+}
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <Suspense fallback={<div className="p-8 text-center text-zinc-400">Loading Mortgage Calculator Pro...</div>}>
+      <MortgageAppContent />
+    </Suspense>
   );
 }
