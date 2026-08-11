@@ -3,6 +3,7 @@
 import { Check, Copy, Printer, Share2 } from 'lucide-react';
 import { useState } from 'react';
 
+import { APP_URL } from '@/lib/env';
 import { CalculationInput } from '@/lib/mortgage/types';
 
 interface ShareAndExportProps {
@@ -13,7 +14,9 @@ export default function ShareAndExport({ input }: ShareAndExportProps) {
   const [copied, setCopied] = useState(false);
 
   const generateShareUrl = () => {
-    if (typeof window === 'undefined') return '';
+    const base = typeof window !== 'undefined'
+      ? window.location.origin
+      : APP_URL;
     const params = new URLSearchParams();
     params.set('country', input.countryCode);
     params.set('price', input.propertyPrice.toString());
@@ -21,7 +24,7 @@ export default function ShareAndExport({ input }: ShareAndExportProps) {
     params.set('rate', input.interestRate.toString());
     params.set('term', input.loanTermYears.toString());
     params.set('freq', input.paymentFrequency);
-    return `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+    return `${base}/?${params.toString()}`;
   };
 
   const handleCopyLink = () => {

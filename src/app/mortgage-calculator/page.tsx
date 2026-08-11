@@ -1,10 +1,11 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 
+import { APP_NAME } from '@/lib/env';
 import { SUPPORTED_COUNTRIES } from '@/lib/mortgage/countries';
 
 export const metadata: Metadata = {
-  title: 'Global Mortgage Calculators by Country | MortgagePro',
+  title: `Global Mortgage Calculators by Country | ${APP_NAME}`,
   description:
     'Select your country to calculate precise mortgage payments, interest rates, property taxes, CMHC/PMI insurance, and amortization schedules.',
 };
