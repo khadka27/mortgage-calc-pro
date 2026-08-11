@@ -23,6 +23,7 @@ export interface LiveRatesPayload {
   allRates: LiveMortgageRate[];
   totalInstitutions: number;
   totalRates: number;
+  statesCovered: number;
   generatedAt: string;
   cachedAt: string;
 }

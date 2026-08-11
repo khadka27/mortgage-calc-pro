@@ -51,6 +51,7 @@ export interface LiveRatesPayload {
   allRates: LiveMortgageRate[];
   totalInstitutions: number;
   totalRates: number;
+  statesCovered: number;
   generatedAt: string;
   cachedAt: string;
 }
@@ -112,6 +113,7 @@ export async function GET() {
       allRates: allMappedRates,
       totalInstitutions: data.summary.total_institutions,
       totalRates: data.summary.total_rates,
+      statesCovered: data.summary.states_covered,
       generatedAt: data.generated_at,
       cachedAt: new Date().toISOString(),
     };

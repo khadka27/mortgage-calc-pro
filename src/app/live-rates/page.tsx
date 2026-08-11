@@ -80,7 +80,7 @@ export default function LiveRatesPage() {
             {[
               { label: 'Institutions Tracked', value: meta ? meta.totalInstitutions.toLocaleString() : '3,377+' },
               { label: 'Live Rates Analyzed', value: meta ? meta.totalRates.toLocaleString() : '58,499+' },
-              { label: 'US States Covered', value: meta ? `${meta.states_covered || 55} States` : '55 States' },
+              { label: 'US States Covered', value: meta ? `${meta.statesCovered || 55} States` : '55 States' },
               { label: 'Data Source API', value: 'rateapi.dev' },
             ].map(({ label, value }) => (
               <div key={label} className="p-3 rounded-2xl border" style={{ backgroundColor: 'color-mix(in srgb, var(--bg-card) 85%, transparent)', borderColor: 'var(--border)' }}>
