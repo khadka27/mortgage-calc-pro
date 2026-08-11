@@ -66,7 +66,7 @@ export default function RentVsBuyPage() {
 
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: 'var(--bg-page)' }}>
-      <Header activeTab="calculator" setActiveTab={() => {}} countryName="United States" currencySymbol="$" />
+      <Header activeTab="calculator" countryName="United States" currencySymbol="$" />
 
       <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         <div className="flex items-center justify-between gap-4 border-b pb-4" style={{ borderColor: 'var(--border)' }}>

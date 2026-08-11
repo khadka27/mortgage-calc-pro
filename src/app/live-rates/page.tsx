@@ -34,7 +34,6 @@ export default function LiveRatesPage() {
       {/* Header */}
       <Header
         activeTab={activeTab}
-        setActiveTab={setActiveTab}
         countryName="United States"
         currencySymbol="$"
       />

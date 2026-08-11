@@ -2,32 +2,38 @@
 
 import { Activity, Calculator, DollarSign, Globe, Home, Layers, Menu, PanelLeftClose, PanelLeftOpen, RefreshCw, ShieldCheck, Sparkles, X } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+import CountrySelectorModal from '@/components/CountrySelectorModal';
 import SidebarNav from '@/components/SidebarNav';
 import { ThemeToggleButton } from '@/components/ThemeProvider';
 import { APP_NAME } from '@/lib/env';
 
 interface HeaderProps {
-  activeTab: 'calculator' | 'affordability' | 'refinance';
-  setActiveTab: (tab: 'calculator' | 'affordability' | 'refinance') => void;
+  activeTab?: 'calculator' | 'affordability' | 'refinance';
+  setActiveTab?: (tab: 'calculator' | 'affordability' | 'refinance') => void;
   countryName: string;
   currencySymbol: string;
+  onSelectCountry?: (country: any) => void;
 }
 
 export default function Header({
-  activeTab,
+  activeTab = 'calculator',
   setActiveTab,
   countryName,
   currencySymbol,
+  onSelectCountry,
 }: HeaderProps) {
+  const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [countryModalOpen, setCountryModalOpen] = useState(false);
 
   const mainNavItems = [
-    { id: 'calculator' as const, label: 'Mortgage Calcs', icon: Calculator },
-    { id: 'refinance' as const, label: 'Refinance', icon: RefreshCw },
-    { id: 'affordability' as const, label: 'Affordability', icon: DollarSign },
+    { id: 'calculator' as const, label: 'Mortgage Calcs', icon: Calculator, href: '/?tab=calculator' },
+    { id: 'refinance' as const, label: 'Refinance', icon: RefreshCw, href: '/?tab=refinance' },
+    { id: 'affordability' as const, label: 'Affordability', icon: DollarSign, href: '/?tab=affordability' },
   ];
 
   const quickLinks = [
@@ -36,10 +42,25 @@ export default function Header({
     { label: 'Global Hub', href: '/mortgage-calculator', icon: Globe },
   ];
 
+  const handleTabClick = (id: 'calculator' | 'affordability' | 'refinance', href: string) => {
+    if (setActiveTab) {
+      setActiveTab(id);
+    } else {
+      router.push(href);
+    }
+  };
+
   return (
     <>
       {/* Collapsible Tool Drawer Sidebar */}
       <SidebarNav isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
+
+      {/* Interactive Country Switcher Popup Modal */}
+      <CountrySelectorModal
+        isOpen={countryModalOpen}
+        onClose={() => setCountryModalOpen(false)}
+        onSelectCountry={onSelectCountry}
+      />
 
       <header className="w-full sticky top-0 z-40 shadow-sm transition-colors border-b" style={{ borderColor: 'var(--border)' }}>
         {/* Top Header Bar — Main Logo & Controls */}
@@ -51,7 +72,7 @@ export default function Header({
           }}
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-            {/* Left: Sidebar Toggle Button + Country Selector Pill */}
+            {/* Left: Sidebar Toggle Button + Country Selector Badge Popup Trigger */}
             <div className="flex items-center gap-2 sm:gap-3">
               <button
                 type="button"
@@ -64,15 +85,17 @@ export default function Header({
                 <span className="hidden sm:inline">All Tools</span>
               </button>
 
-              <Link
-                href="/mortgage-calculator"
-                className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-xl border transition-all duration-200 hover:border-emerald-500/50"
+              <button
+                type="button"
+                onClick={() => setCountryModalOpen(true)}
+                className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-xl border transition-all duration-200 hover:border-emerald-500/50 cursor-pointer"
                 style={{ backgroundColor: 'var(--bg-subtle)', borderColor: 'var(--border)', color: 'var(--text-secondary)' }}
+                title="Click to Switch Country"
               >
                 <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
                 <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>{countryName}</span>
                 <span className="font-bold text-emerald-500 font-mono">({currencySymbol})</span>
-              </Link>
+              </button>
             </div>
 
             {/* Center: Large Brand Logo */}
@@ -117,7 +140,7 @@ export default function Header({
                 <div key={item.id} className="flex items-center gap-3">
                   <button
                     type="button"
-                    onClick={() => setActiveTab(item.id)}
+                    onClick={() => handleTabClick(item.id, item.href)}
                     className={`flex items-center gap-1.5 px-3 py-1 rounded-lg transition-all duration-200 cursor-pointer ${
                       isActive
                         ? 'bg-emerald-500 text-white font-bold shadow-md shadow-emerald-500/30'
@@ -165,7 +188,7 @@ export default function Header({
                     key={item.id}
                     type="button"
                     onClick={() => {
-                      setActiveTab(item.id);
+                      handleTabClick(item.id, item.href);
                       setMobileMenuOpen(false);
                     }}
                     className="w-full flex items-center justify-between p-3 rounded-xl border text-xs font-bold transition-all"
