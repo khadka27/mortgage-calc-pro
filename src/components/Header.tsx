@@ -72,19 +72,8 @@ export default function Header({
           }}
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-            {/* Left: Sidebar Toggle Button + Country Selector Badge Popup Trigger */}
+            {/* Left: Country Selector Badge Popup Trigger */}
             <div className="flex items-center gap-2 sm:gap-3">
-              <button
-                type="button"
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all duration-200 hover:border-emerald-500/50 hover:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-                style={{ backgroundColor: 'var(--bg-subtle)', borderColor: 'var(--border)' }}
-                title="Toggle All Mortgage Tools Sidebar"
-              >
-                {sidebarOpen ? <PanelLeftClose className="w-4 h-4" /> : <PanelLeftOpen className="w-4 h-4" />}
-                <span className="hidden sm:inline">All Tools</span>
-              </button>
-
               <button
                 type="button"
                 onClick={() => setCountryModalOpen(true)}
