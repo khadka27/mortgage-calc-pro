@@ -1,8 +1,9 @@
 'use client';
 
-import { ArrowRight, DollarSign, RefreshCw, TrendingDown, TrendingUp } from 'lucide-react';
+import { RefreshCw, TrendingDown, TrendingUp } from 'lucide-react';
 import { useState } from 'react';
 
+import CustomSelect from '@/components/CustomSelect';
 import { formatCurrency } from '@/lib/mortgage/decimalUtils';
 import { calculateRefinance } from '@/lib/mortgage/refinance';
 import { CountryConfig } from '@/lib/mortgage/types';
@@ -15,7 +16,7 @@ export default function RefinanceCalculator({ country }: RefinanceCalculatorProp
   const [currentLoanBalance, setCurrentLoanBalance] = useState<number>(300000);
   const [currentInterestRate, setCurrentInterestRate] = useState<number>(7.25);
   const [currentMonthlyPayment, setCurrentMonthlyPayment] = useState<number>(2046);
-  const [remainingTermMonths, setRemainingTermMonths] = useState<number>(300); // 25 years left
+  const [remainingTermMonths, setRemainingTermMonths] = useState<number>(300);
 
   const [newInterestRate, setNewInterestRate] = useState<number>(5.5);
   const [newLoanTermYears, setNewLoanTermYears] = useState<number>(25);
@@ -32,189 +33,161 @@ export default function RefinanceCalculator({ country }: RefinanceCalculatorProp
     closingCosts,
   });
 
+  const cardStyle: React.CSSProperties = { backgroundColor: 'var(--bg-card)', borderColor: 'var(--border)' };
+  const panelStyle: React.CSSProperties = { backgroundColor: 'var(--bg-subtle)', borderColor: 'var(--border)' };
+  const inputStyle: React.CSSProperties = { backgroundColor: 'var(--bg-input)', borderColor: 'var(--border)', color: 'var(--text-primary)' };
+  const tileStyle: React.CSSProperties = { backgroundColor: 'var(--bg-subtle)', borderColor: 'var(--border)' };
+  const inputCls = 'w-full rounded-lg px-3 py-2 text-xs font-semibold border focus:outline-none focus:ring-2 focus:ring-emerald-500/30';
+  const labelCls = 'block text-[11px] font-semibold uppercase tracking-wider mb-1';
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-      {/* Input Columns */}
-      <div className="lg:col-span-7 bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-xl space-y-6">
-        <div className="border-b border-zinc-800 pb-3 flex items-center justify-between">
-          <h2 className="text-lg font-bold text-white flex items-center gap-2">
-            <RefreshCw className="w-5 h-5 text-emerald-400" />
+      {/* Input columns */}
+      <div className="lg:col-span-7 border rounded-2xl p-6 shadow-sm space-y-6" style={cardStyle}>
+        {/* Header */}
+        <div className="border-b pb-3 flex items-center justify-between" style={{ borderColor: 'var(--border)' }}>
+          <h2 className="text-base font-bold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+            <RefreshCw className="w-5 h-5" style={{ color: 'var(--accent)' }} />
             Mortgage Refinance Comparison
           </h2>
-          <span className="text-xs text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+          <span
+            className="text-xs font-semibold px-2 py-0.5 rounded-full border"
+            style={{ backgroundColor: 'var(--accent-bg)', color: 'var(--accent)', borderColor: 'var(--accent-border)' }}
+          >
             {country.currencyCode} ({country.currencySymbol})
           </span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Current Mortgage Column */}
-          <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 space-y-3">
-            <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {/* Current Mortgage */}
+          <div className="p-4 rounded-xl border space-y-3" style={panelStyle}>
+            <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>
               Current Mortgage
             </h3>
 
-            <div>
-              <label className="block text-[11px] font-medium text-zinc-400 mb-1">
-                Current Balance ({country.currencySymbol})
-              </label>
-              <input
-                type="number"
-                min="0"
-                step="1000"
-                value={currentLoanBalance || ''}
-                onChange={(e) => setCurrentLoanBalance(Number(e.target.value))}
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white font-semibold focus:outline-none focus:border-emerald-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-[11px] font-medium text-zinc-400 mb-1">
-                Current Interest Rate (%)
-              </label>
-              <input
-                type="number"
-                min="0"
-                step="0.1"
-                value={currentInterestRate || ''}
-                onChange={(e) => setCurrentInterestRate(Number(e.target.value))}
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white font-semibold focus:outline-none focus:border-emerald-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-[11px] font-medium text-zinc-400 mb-1">
-                Current Monthly Payment ({country.currencySymbol})
-              </label>
-              <input
-                type="number"
-                min="0"
-                step="50"
-                value={currentMonthlyPayment || ''}
-                onChange={(e) => setCurrentMonthlyPayment(Number(e.target.value))}
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white font-semibold focus:outline-none focus:border-emerald-500"
-              />
-            </div>
-
-            <div>
-              <label className="block text-[11px] font-medium text-zinc-400 mb-1">
-                Remaining Term (Months)
-              </label>
-              <input
-                type="number"
-                min="1"
-                step="12"
-                value={remainingTermMonths || ''}
-                onChange={(e) => setRemainingTermMonths(Number(e.target.value))}
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white font-semibold focus:outline-none focus:border-emerald-500"
-              />
-            </div>
+            {[
+              { label: `Current Balance (${country.currencySymbol})`, value: currentLoanBalance, setter: setCurrentLoanBalance, step: 1000 },
+              { label: 'Current Interest Rate (%)', value: currentInterestRate, setter: setCurrentInterestRate, step: 0.1 },
+              { label: `Current Monthly Payment (${country.currencySymbol})`, value: currentMonthlyPayment, setter: setCurrentMonthlyPayment, step: 50 },
+              { label: 'Remaining Term (Months)', value: remainingTermMonths, setter: setRemainingTermMonths, step: 12, min: 1 },
+            ].map(({ label, value, setter, step, min }) => (
+              <div key={label}>
+                <label className={labelCls} style={{ color: 'var(--text-muted)' }}>{label}</label>
+                <input
+                  type="number" min={min ?? 0} step={step}
+                  value={value || ''}
+                  onChange={(e) => setter(Number(e.target.value))}
+                  className={inputCls} style={inputStyle}
+                />
+              </div>
+            ))}
           </div>
 
-          {/* New Proposed Mortgage Column */}
-          <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 space-y-3">
-            <h3 className="text-xs font-bold text-emerald-400 uppercase tracking-wider">
+          {/* Proposed Refinance */}
+          <div className="p-4 rounded-xl border space-y-3" style={panelStyle}>
+            <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--accent)' }}>
               Proposed Refinance
             </h3>
 
             <div>
-              <label className="block text-[11px] font-medium text-zinc-400 mb-1">
-                New Interest Rate (%)
-              </label>
+              <label className={labelCls} style={{ color: 'var(--text-muted)' }}>New Interest Rate (%)</label>
               <input
-                type="number"
-                min="0"
-                step="0.1"
+                type="number" min="0" step="0.1"
                 value={newInterestRate || ''}
                 onChange={(e) => setNewInterestRate(Number(e.target.value))}
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white font-semibold focus:outline-none focus:border-emerald-500"
+                className={inputCls} style={inputStyle}
               />
             </div>
 
             <div>
-              <label className="block text-[11px] font-medium text-zinc-400 mb-1">
-                New Loan Term (Years)
-              </label>
-              <select
-                value={newLoanTermYears}
-                onChange={(e) => setNewLoanTermYears(Number(e.target.value))}
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white font-semibold focus:outline-none focus:border-emerald-500"
-              >
-                {country.availableLoanTerms.map((t) => (
-                  <option key={t} value={t}>
-                    {t} Years
-                  </option>
-                ))}
-              </select>
+              <label className={labelCls} style={{ color: 'var(--text-muted)' }}>New Loan Term (Years)</label>
+              <CustomSelect
+                id="refinance-loan-term"
+                value={String(newLoanTermYears)}
+                onChange={(v) => setNewLoanTermYears(Number(v))}
+                options={country.availableLoanTerms.map((t) => ({ value: String(t), label: `${t} Years` }))}
+              />
             </div>
 
             <div>
-              <label className="block text-[11px] font-medium text-zinc-400 mb-1">
-                Refinance Closing Costs ({country.currencySymbol})
+              <label className={labelCls} style={{ color: 'var(--text-muted)' }}>
+                Closing Costs ({country.currencySymbol})
               </label>
               <input
-                type="number"
-                min="0"
-                step="250"
+                type="number" min="0" step="250"
                 value={closingCosts || ''}
                 onChange={(e) => setClosingCosts(Number(e.target.value))}
-                className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white font-semibold focus:outline-none focus:border-emerald-500"
+                className={inputCls} style={inputStyle}
               />
             </div>
           </div>
         </div>
       </div>
 
-      {/* Output Analysis Column */}
-      <div className="lg:col-span-5 bg-gradient-to-b from-zinc-900 to-zinc-950 border border-zinc-800 rounded-2xl p-6 shadow-xl flex flex-col justify-between space-y-6">
+      {/* Results */}
+      <div className="lg:col-span-5 border rounded-2xl p-6 shadow-sm flex flex-col justify-between gap-6" style={cardStyle}>
+        {/* Hero metric */}
         <div>
-          <div className="text-xs font-bold text-emerald-400 uppercase tracking-widest">
+          <div className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: 'var(--accent)' }}>
             Estimated Monthly Savings
           </div>
           {result.monthlySavings > 0 ? (
-            <div className="text-4xl font-black text-emerald-400 tracking-tight mt-1">
+            <div className="text-4xl font-black tracking-tight" style={{ color: 'var(--accent)' }}>
               {formatCurrency(result.monthlySavings, country.currencyCode)} / mo
             </div>
           ) : (
-            <div className="text-2xl font-bold text-rose-400 mt-1">
+            <div className="text-2xl font-bold" style={{ color: '#f43f5e' }}>
               No Monthly Savings
             </div>
           )}
-          <p className="text-xs text-zinc-400 mt-1">
-            New monthly payment of {formatCurrency(result.newMonthlyPayment, country.currencyCode)} vs current {formatCurrency(currentMonthlyPayment, country.currencyCode)}.
+          <p className="text-xs mt-1.5" style={{ color: 'var(--text-muted)' }}>
+            New payment {formatCurrency(result.newMonthlyPayment, country.currencyCode)} vs current{' '}
+            {formatCurrency(currentMonthlyPayment, country.currencyCode)}.
           </p>
         </div>
 
-        {/* Break-even analytics */}
-        <div className="space-y-3 border-t border-zinc-800 pt-5 text-xs">
-          <div className="flex items-center justify-between bg-zinc-950 p-3.5 rounded-xl border border-zinc-800">
-            <span className="text-zinc-300 font-medium">Break-Even Period</span>
-            <span className="font-bold text-white">
-              {result.breakEvenMonths !== null
+        {/* Analytics tiles */}
+        <div className="space-y-2.5 border-t pt-5" style={{ borderColor: 'var(--border)' }}>
+          {[
+            {
+              label: 'Break-Even Period',
+              value: result.breakEvenMonths !== null
                 ? `${result.breakEvenMonths} Months (${(result.breakEvenMonths / 12).toFixed(1)} yrs)`
-                : 'N/A (No monthly savings)'}
-            </span>
-          </div>
-
-          <div className="flex items-center justify-between bg-zinc-950 p-3.5 rounded-xl border border-zinc-800">
-            <span className="text-zinc-300 font-medium">Net Lifetime Interest Savings</span>
-            <span className={`font-bold ${result.netLifetimeSavings > 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-              {formatCurrency(result.netLifetimeSavings, country.currencyCode)}
-            </span>
-          </div>
+                : 'N/A — no monthly savings',
+              positive: result.breakEvenMonths !== null,
+            },
+            {
+              label: 'Net Lifetime Interest Savings',
+              value: formatCurrency(result.netLifetimeSavings, country.currencyCode),
+              positive: result.netLifetimeSavings > 0,
+            },
+          ].map(({ label, value, positive }) => (
+            <div key={label} className="flex items-center justify-between p-3.5 rounded-xl border text-xs" style={tileStyle}>
+              <span className="font-medium" style={{ color: 'var(--text-secondary)' }}>{label}</span>
+              <span className="font-bold" style={{ color: positive ? 'var(--accent)' : '#f43f5e' }}>{value}</span>
+            </div>
+          ))}
         </div>
 
+        {/* Recommendation banner */}
         {result.isRefinanceBeneficial ? (
-          <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4 text-xs text-emerald-300 flex items-center gap-3">
-            <TrendingDown className="w-6 h-6 text-emerald-400 shrink-0" />
+          <div
+            className="rounded-xl p-4 flex items-center gap-3 text-xs border"
+            style={{ backgroundColor: 'var(--accent-bg)', borderColor: 'var(--accent-border)', color: 'var(--accent-text)' }}
+          >
+            <TrendingDown className="w-5 h-5 shrink-0" style={{ color: 'var(--accent)' }} />
             <div>
-              <strong>Refinance Recommended:</strong> This refinance generates immediate monthly savings and recoups closing costs in {result.breakEvenMonths} months.
+              <strong>Refinance Recommended:</strong> Generates monthly savings and recoups closing costs in {result.breakEvenMonths} months.
             </div>
           </div>
         ) : (
-          <div className="bg-rose-500/10 border border-rose-500/30 rounded-xl p-4 text-xs text-rose-300 flex items-center gap-3">
-            <TrendingUp className="w-6 h-6 text-rose-400 shrink-0" />
+          <div
+            className="rounded-xl p-4 flex items-center gap-3 text-xs border"
+            style={{ backgroundColor: 'rgba(244, 63, 94, 0.07)', borderColor: 'rgba(244, 63, 94, 0.2)', color: '#f43f5e' }}
+          >
+            <TrendingUp className="w-5 h-5 shrink-0" />
             <div>
-              <strong>Refinance Caution:</strong> Proposed interest rate or terms do not yield sufficient monthly savings to justify closing costs.
+              <strong>Refinance Caution:</strong> Proposed terms don't generate sufficient savings to justify closing costs.
             </div>
           </div>
         )}

@@ -1,8 +1,9 @@
 'use client';
 
-import { Calendar, DollarSign, Info, Percent, RotateCcw } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { RotateCcw } from 'lucide-react';
+import { useState } from 'react';
 
+import CustomSelect from '@/components/CustomSelect';
 import { CalculationInput, CountryConfig, PaymentFrequency } from '@/lib/mortgage/types';
 
 interface MortgageFormProps {
@@ -247,35 +248,26 @@ export default function MortgageForm({
         {/* Loan Term */}
         <div>
           <label className={labelCls} style={{ color: 'var(--text-muted)' }}>Loan Term (Years)</label>
-          <select
-            value={input.loanTermYears}
-            onChange={(e) => onChangeInput({ ...input, loanTermYears: Number(e.target.value) })}
-            className={`${inputCls} border`}
-            style={inputStyle}
-          >
-            {country.availableLoanTerms.map((term) => (
-              <option key={term} value={term}>
-                {term} Years
-              </option>
-            ))}
-          </select>
+          <CustomSelect
+            id="select-loan-term"
+            value={String(input.loanTermYears)}
+            onChange={(v) => onChangeInput({ ...input, loanTermYears: Number(v) })}
+            options={country.availableLoanTerms.map((term) => ({ value: String(term), label: `${term} Years` }))}
+          />
         </div>
 
         {/* Payment Frequency */}
         <div>
           <label className={labelCls} style={{ color: 'var(--text-muted)' }}>Payment Frequency</label>
-          <select
+          <CustomSelect
+            id="select-payment-frequency"
             value={input.paymentFrequency}
-            onChange={(e) => onChangeInput({ ...input, paymentFrequency: e.target.value as PaymentFrequency })}
-            className={`${inputCls} border capitalize`}
-            style={inputStyle}
-          >
-            {country.paymentFrequencyOptions.map((freq) => (
-              <option key={freq} value={freq} className="capitalize">
-                {freq.charAt(0).toUpperCase() + freq.slice(1)}
-              </option>
-            ))}
-          </select>
+            onChange={(v) => onChangeInput({ ...input, paymentFrequency: v as PaymentFrequency })}
+            options={country.paymentFrequencyOptions.map((freq) => ({
+              value: freq,
+              label: freq.charAt(0).toUpperCase() + freq.slice(1),
+            }))}
+          />
         </div>
 
         {/* Mortgage Type */}
@@ -283,18 +275,16 @@ export default function MortgageForm({
           <label className={labelCls} style={{ color: 'var(--text-muted)' }}>
             Mortgage Product Type ({country.countryName})
           </label>
-          <select
-            value={input.mortgageTypeId || country.mortgageTypes[0]?.id}
-            onChange={(e) => onChangeInput({ ...input, mortgageTypeId: e.target.value })}
-            className={`${inputCls} border`}
-            style={inputStyle}
-          >
-            {country.mortgageTypes.map((type) => (
-              <option key={type.id} value={type.id}>
-                {type.name} — {type.description}
-              </option>
-            ))}
-          </select>
+          <CustomSelect
+            id="select-mortgage-type"
+            value={input.mortgageTypeId || country.mortgageTypes[0]?.id || ''}
+            onChange={(v) => onChangeInput({ ...input, mortgageTypeId: v })}
+            options={country.mortgageTypes.map((type) => ({
+              value: type.id,
+              label: type.name,
+              description: type.description,
+            }))}
+          />
         </div>
       </div>
 
