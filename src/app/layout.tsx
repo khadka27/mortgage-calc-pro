@@ -39,7 +39,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-zinc-950 text-zinc-100" suppressHydrationWarning>
-        <div className="flex-1">{children}</div>
+        <div className="flex-1" suppressHydrationWarning>{children}</div>
 
         <footer className="border-t border-zinc-800 bg-zinc-950 text-zinc-400 py-8 px-4 sm:px-6 lg:px-8 text-xs no-print">
           <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
