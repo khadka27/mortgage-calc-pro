@@ -88,7 +88,11 @@ function MortgageAppContent() {
   }, [input]);
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col font-sans" suppressHydrationWarning>
+    <div
+      className="min-h-screen flex flex-col font-sans"
+      style={{ backgroundColor: 'var(--bg-page)', color: 'var(--text-primary)' }}
+      suppressHydrationWarning
+    >
       <Header
         activeTab={activeTab}
         setActiveTab={setActiveTab}
