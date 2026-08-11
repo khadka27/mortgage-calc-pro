@@ -1,7 +1,8 @@
 'use client';
 
-import { Calculator, DollarSign, Home, RefreshCw, ShieldCheck } from 'lucide-react';
+import { Calculator, DollarSign, Globe, Home, Menu, RefreshCw, ShieldCheck, X } from 'lucide-react';
 import Link from 'next/link';
+import { useState } from 'react';
 
 import { ThemeToggleButton } from '@/components/ThemeProvider';
 import { APP_NAME } from '@/lib/env';
@@ -19,96 +20,170 @@ export default function Header({
   countryName,
   currencySymbol,
 }: HeaderProps) {
-  const tabClass = (tab: string) =>
-    `flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-medium rounded-lg transition-all duration-200 ${
-      activeTab === tab
-        ? 'bg-emerald-500 dark:bg-emerald-500 text-white font-semibold shadow-md shadow-emerald-500/25'
-        : 'text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-800'
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const navItems = [
+    { id: 'calculator' as const, label: 'Mortgage', fullLabel: 'Mortgage Calculator', icon: Calculator },
+    { id: 'affordability' as const, label: 'Affordability', fullLabel: 'Home Affordability', icon: DollarSign },
+    { id: 'refinance' as const, label: 'Refinance', fullLabel: 'Refinance Comparison', icon: RefreshCw },
+  ];
+
+  const desktopTabClass = (id: string) =>
+    `flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all duration-200 ${
+      activeTab === id
+        ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/25'
+        : 'hover:bg-slate-100 dark:hover:bg-zinc-800'
     }`;
 
-  const mobileTabClass = (tab: string) =>
-    `flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md whitespace-nowrap transition-all ${
-      activeTab === tab
-        ? 'bg-emerald-500 text-white font-semibold'
-        : 'text-slate-500 dark:text-zinc-400 hover:text-slate-800 dark:hover:text-white bg-slate-100 dark:bg-zinc-900'
+  const mobileTabClass = (id: string) =>
+    `flex-1 min-w-0 flex items-center justify-center gap-1.5 py-2 px-2.5 text-xs font-semibold rounded-xl transition-all duration-200 ${
+      activeTab === id
+        ? 'bg-emerald-500 text-white shadow-sm'
+        : 'hover:bg-slate-100 dark:hover:bg-zinc-800'
     }`;
 
   return (
     <header
-      className="sticky top-0 z-40 backdrop-blur-md shadow-sm border-b"
+      className="sticky top-0 z-40 backdrop-blur-md shadow-sm border-b transition-colors"
       style={{
-        backgroundColor: 'color-mix(in srgb, var(--bg-card) 95%, transparent)',
+        backgroundColor: 'color-mix(in srgb, var(--bg-card) 92%, transparent)',
         borderColor: 'var(--border)',
       }}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 gap-4">
+      <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-14 sm:h-16 gap-3">
           {/* Logo & Brand */}
-          <Link href="/" className="flex items-center gap-2.5 group shrink-0">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center shadow-md shadow-emerald-500/25 group-hover:scale-105 transition-transform duration-200">
-              <Home className="w-4.5 h-4.5 text-white" strokeWidth={2.5} />
+          <Link href="/" className="flex items-center gap-2 group shrink-0">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center shadow-md shadow-emerald-500/25 group-hover:scale-105 transition-transform duration-200">
+              <Home className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-white" strokeWidth={2.5} />
             </div>
-            <div className="hidden sm:block">
-              <span className="text-lg font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>
+            <div className="flex items-center gap-1.5">
+              <span className="text-base sm:text-lg font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>
                 {APP_NAME.replace(' Global', '')}
               </span>
-              <span className="ml-2 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25 tracking-widest">
-                GLOBAL
+              <span className="text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25 tracking-widest uppercase">
+                Global
               </span>
             </div>
           </Link>
 
-          {/* Mode Switcher Tabs — desktop */}
+          {/* Desktop Navigation Tabs */}
           <nav
-            className="hidden md:flex items-center gap-0.5 p-1.5 rounded-xl border"
+            className="hidden md:flex items-center gap-1 p-1 rounded-xl border"
             style={{ backgroundColor: 'var(--bg-subtle)', borderColor: 'var(--border)' }}
           >
-            <button id="tab-calculator" onClick={() => setActiveTab('calculator')} className={tabClass('calculator')}>
-              <Calculator className="w-4 h-4" />
-              Mortgage Calculator
-            </button>
-            <button id="tab-affordability" onClick={() => setActiveTab('affordability')} className={tabClass('affordability')}>
-              <DollarSign className="w-4 h-4" />
-              Affordability
-            </button>
-            <button id="tab-refinance" onClick={() => setActiveTab('refinance')} className={tabClass('refinance')}>
-              <RefreshCw className="w-4 h-4" />
-              Refinance
-            </button>
+            {navItems.map(({ id, fullLabel, icon: Icon }) => (
+              <button
+                key={id}
+                id={`tab-${id}`}
+                onClick={() => setActiveTab(id)}
+                className={desktopTabClass(id)}
+                style={activeTab !== id ? { color: 'var(--text-secondary)' } : {}}
+              >
+                <Icon className="w-4 h-4" />
+                {fullLabel}
+              </button>
+            ))}
           </nav>
 
-          {/* Right side: country badge + theme toggle */}
+          {/* Right Section: Country Badge, Theme Toggle & Mobile Menu Trigger */}
           <div className="flex items-center gap-2 shrink-0">
+            {/* Country Pill */}
             <div
-              className="hidden sm:flex items-center gap-2 text-xs px-3 py-1.5 rounded-lg border"
-              style={{ backgroundColor: 'var(--bg-subtle)', borderColor: 'var(--border)', color: 'var(--text-muted)' }}
+              className="flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-xl border font-medium"
+              style={{ backgroundColor: 'var(--bg-subtle)', borderColor: 'var(--border)', color: 'var(--text-secondary)' }}
             >
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-              <span className="font-medium" style={{ color: 'var(--text-secondary)' }}>{countryName}</span>
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+              <span className="hidden sm:inline font-medium">{countryName}</span>
               <span className="font-bold text-emerald-500">({currencySymbol})</span>
             </div>
+
             <ThemeToggleButton />
+
+            {/* Mobile Drawer Trigger */}
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-2 rounded-xl border transition-colors"
+              style={{ backgroundColor: 'var(--bg-subtle)', borderColor: 'var(--border)', color: 'var(--text-primary)' }}
+              aria-label="Toggle mobile menu"
+            >
+              {mobileMenuOpen ? <X className="w-4.5 h-4.5" /> : <Menu className="w-4.5 h-4.5" />}
+            </button>
           </div>
         </div>
 
-        {/* Mobile Navigation Tabs */}
-        <div
-          className="flex md:hidden border-t py-2 gap-1 overflow-x-auto"
-          style={{ borderColor: 'var(--border)' }}
-        >
-          <button id="tab-calculator-mobile" onClick={() => setActiveTab('calculator')} className={mobileTabClass('calculator')}>
-            <Calculator className="w-3.5 h-3.5" />
-            Mortgage
-          </button>
-          <button id="tab-affordability-mobile" onClick={() => setActiveTab('affordability')} className={mobileTabClass('affordability')}>
-            <DollarSign className="w-3.5 h-3.5" />
-            Affordability
-          </button>
-          <button id="tab-refinance-mobile" onClick={() => setActiveTab('refinance')} className={mobileTabClass('refinance')}>
-            <RefreshCw className="w-3.5 h-3.5" />
-            Refinance
-          </button>
+        {/* Mobile Navigation Segmented Control Bar */}
+        <div className="md:hidden border-t py-1.5" style={{ borderColor: 'var(--border)' }}>
+          <nav
+            className="flex items-center gap-1 p-1 rounded-xl border"
+            style={{ backgroundColor: 'var(--bg-subtle)', borderColor: 'var(--border)' }}
+          >
+            {navItems.map(({ id, label, icon: Icon }) => (
+              <button
+                key={id}
+                id={`tab-${id}-mobile`}
+                onClick={() => {
+                  setActiveTab(id);
+                  setMobileMenuOpen(false);
+                }}
+                className={mobileTabClass(id)}
+                style={activeTab !== id ? { color: 'var(--text-secondary)' } : {}}
+              >
+                <Icon className="w-3.5 h-3.5 shrink-0" />
+                <span className="truncate">{label}</span>
+              </button>
+            ))}
+          </nav>
         </div>
+
+        {/* Mobile Drawer Overlay */}
+        {mobileMenuOpen && (
+          <div
+            className="md:hidden border-t py-4 px-2 space-y-3 animate-in fade-in slide-in-from-top-2 duration-200"
+            style={{ borderColor: 'var(--border)' }}
+          >
+            <div className="text-xs font-bold uppercase tracking-wider px-2" style={{ color: 'var(--text-muted)' }}>
+              Calculator Modes & Tools
+            </div>
+            <div className="space-y-1">
+              {navItems.map(({ id, fullLabel, icon: Icon }) => (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => {
+                    setActiveTab(id);
+                    setMobileMenuOpen(false);
+                  }}
+                  className="w-full flex items-center justify-between p-3 rounded-xl border text-xs font-semibold transition-colors"
+                  style={{
+                    backgroundColor: activeTab === id ? 'var(--accent-bg)' : 'var(--bg-subtle)',
+                    borderColor: activeTab === id ? 'var(--accent-border)' : 'var(--border)',
+                    color: activeTab === id ? 'var(--accent)' : 'var(--text-primary)',
+                  }}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <Icon className="w-4 h-4" />
+                    <span>{fullLabel}</span>
+                  </div>
+                  {activeTab === id && (
+                    <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full" style={{ backgroundColor: 'var(--accent)', color: '#fff' }}>
+                      Active
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+
+            <div className="pt-2 border-t flex items-center justify-between px-2 text-xs" style={{ borderColor: 'var(--border)', color: 'var(--text-muted)' }}>
+              <div className="flex items-center gap-1.5">
+                <Globe className="w-3.5 h-3.5 text-emerald-500" />
+                <span>Selected: <strong style={{ color: 'var(--text-primary)' }}>{countryName}</strong></span>
+              </div>
+              <span className="font-mono text-[11px] font-bold text-emerald-500">{currencySymbol}</span>
+            </div>
+          </div>
+        )}
       </div>
     </header>
   );
