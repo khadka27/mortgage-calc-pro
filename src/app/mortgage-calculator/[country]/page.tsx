@@ -5,6 +5,8 @@ import AmortizationTable from '@/components/AmortizationTable';
 import ChartsSection from '@/components/ChartsSection';
 import DisclaimerSection from '@/components/DisclaimerSection';
 import FAQSection from '@/components/FAQSection';
+import Footer from '@/components/Footer';
+import Header from '@/components/Header';
 import ResultsSummary from '@/components/ResultsSummary';
 import { APP_NAME, APP_URL } from '@/lib/env';
 import { calculateMortgage } from '@/lib/mortgage/calculator';
@@ -63,40 +65,46 @@ export default async function CountryMortgagePage({
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8">
+    <div className="min-h-screen flex flex-col transition-colors" style={{ backgroundColor: 'var(--bg-page)' }}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <div className="space-y-3">
-        <div className="flex items-center gap-2 text-xs font-bold text-emerald-400 uppercase tracking-widest">
-          <span>Country Specific Mortgage Guide</span>
+      <Header activeTab="calculator" countryName={config.countryName} currencySymbol={config.currencySymbol} />
+
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 text-xs font-bold text-emerald-500 uppercase tracking-widest">
+            <span>Country Specific Mortgage Guide</span>
+          </div>
+          <h1 className="text-3xl sm:text-4xl font-black tracking-tight" style={{ color: 'var(--text-primary)' }}>
+            {config.countryName} Mortgage Calculator ({config.currencyCode})
+          </h1>
+          <p className="text-sm leading-relaxed max-w-3xl" style={{ color: 'var(--text-secondary)' }}>
+            Engineered for home buyers in {config.countryName}. Calculates precise monthly/periodic payments, principal &amp; interest breakdown, property taxes, and regional insurance requirements using official baseline rates.
+          </p>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-black text-white">
-          {config.countryName} Mortgage Calculator ({config.currencyCode})
-        </h1>
-        <p className="text-sm text-zinc-400 max-w-3xl">
-          Engineered for home buyers in {config.countryName}. Calculates precise monthly/periodic payments, principal & interest breakdown, property taxes, and regional insurance requirements using official baseline rates.
-        </p>
-      </div>
 
-      {/* Summary Banner */}
-      <ResultsSummary result={initialResult} />
+        {/* Summary Banner */}
+        <ResultsSummary result={initialResult} />
 
-      {/* Visual Charts */}
-      <ChartsSection result={initialResult} />
+        {/* Visual Charts */}
+        <ChartsSection result={initialResult} />
 
-      {/* Amortization Schedule */}
-      <AmortizationTable
-        summary={initialResult.amortizationSchedule}
-        currencyCode={config.currencyCode}
-        currencySymbol={config.currencySymbol}
-      />
+        {/* Amortization Schedule */}
+        <AmortizationTable
+          summary={initialResult.amortizationSchedule}
+          currencyCode={config.currencyCode}
+          currencySymbol={config.currencySymbol}
+        />
 
-      {/* FAQs & Legal Disclaimer */}
-      <FAQSection country={config} />
-      <DisclaimerSection country={config} />
+        {/* FAQs & Legal Disclaimer */}
+        <FAQSection country={config} />
+        <DisclaimerSection country={config} />
+      </main>
+
+      <Footer />
     </div>
   );
 }
