@@ -180,7 +180,7 @@ export default function ChartsSection({ result }: ChartsSectionProps) {
                 ))}
               </Pie>
               <Tooltip
-                formatter={(val: number) => [formatCurrency(val, currencyCode), '']}
+                formatter={(val: any) => [formatCurrency(Number(val) || 0, currencyCode), '']}
                 contentStyle={{ backgroundColor: '#18181b', borderColor: '#27272a', borderRadius: 8, color: '#fff' }}
               />
               <Legend formatter={(val) => <span className="text-xs text-zinc-300 font-medium">{val}</span>} />
@@ -232,7 +232,7 @@ export default function ChartsSection({ result }: ChartsSectionProps) {
               <XAxis dataKey="year" stroke="#71717a" fontSize={11} />
               <YAxis stroke="#71717a" fontSize={11} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
               <Tooltip
-                formatter={(val: number) => [formatCurrency(val, currencyCode), '']}
+                formatter={(val: any) => [formatCurrency(Number(val) || 0, currencyCode), '']}
                 contentStyle={{ backgroundColor: '#18181b', borderColor: '#27272a', borderRadius: 8, color: '#fff' }}
               />
               <Legend formatter={(val) => <span className="text-xs text-zinc-300 font-medium">{val}</span>} />
