@@ -1,13 +1,14 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { Moon, Sun } from 'lucide-react';
 
 type Theme = 'light' | 'dark';
 
 interface ThemeContextValue {
   theme: Theme;
-  toggleTheme: () => void;
+  toggleTheme: (event?: React.MouseEvent<HTMLElement>) => void;
 }
 
 const ThemeContext = createContext<ThemeContextValue>({
@@ -29,13 +30,55 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setMounted(true);
   }, []);
 
-  const toggleTheme = () => {
-    setTheme((prev) => {
-      const next: Theme = prev === 'dark' ? 'light' : 'dark';
-      localStorage.setItem('mp-theme', next);
-      document.documentElement.classList.toggle('dark', next === 'dark');
-      return next;
+  const toggleTheme = async (event?: React.MouseEvent<HTMLElement>) => {
+    const nextTheme: Theme = theme === 'dark' ? 'light' : 'dark';
+
+    const triggerEl = event?.currentTarget;
+    const hasViewTransition =
+      typeof document !== 'undefined' &&
+      'startViewTransition' in document &&
+      !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (!hasViewTransition || !triggerEl) {
+      localStorage.setItem('mp-theme', nextTheme);
+      document.documentElement.classList.toggle('dark', nextTheme === 'dark');
+      setTheme(nextTheme);
+      return;
+    }
+
+    const { top, left, width, height } = triggerEl.getBoundingClientRect();
+    const x = left + width / 2;
+    const y = top + height / 2;
+    const right = window.innerWidth - left;
+    const bottom = window.innerHeight - top;
+    const maxRadius = Math.hypot(
+      Math.max(left, right),
+      Math.max(top, bottom)
+    );
+
+    const transition = (document as any).startViewTransition(() => {
+      flushSync(() => {
+        localStorage.setItem('mp-theme', nextTheme);
+        document.documentElement.classList.toggle('dark', nextTheme === 'dark');
+        setTheme(nextTheme);
+      });
     });
+
+    await transition.ready;
+
+    document.documentElement.animate(
+      {
+        clipPath: [
+          `circle(0px at ${x}px ${y}px)`,
+          `circle(${maxRadius}px at ${x}px ${y}px)`,
+        ],
+      },
+      {
+        duration: 500,
+        easing: 'ease-in-out',
+        pseudoElement: '::view-transition-new(root)',
+      }
+    );
   };
 
   // Avoid flash: don't render children until theme resolved
@@ -58,11 +101,13 @@ export function useTheme(): ThemeContextValue {
 
 export function ThemeToggleButton({ className = '' }: { className?: string }) {
   const { theme, toggleTheme } = useTheme();
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   return (
     <button
+      ref={buttonRef}
       type="button"
-      onClick={toggleTheme}
+      onClick={(e) => toggleTheme(e)}
       aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
       title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
       className={`
@@ -72,7 +117,7 @@ export function ThemeToggleButton({ className = '' }: { className?: string }) {
         text-slate-600 dark:text-zinc-300
         hover:bg-slate-200 dark:hover:bg-zinc-700
         hover:text-slate-900 dark:hover:text-white
-        transition-all duration-200 shadow-sm
+        transition-all duration-200 shadow-sm shrink-0
         ${className}
       `}
     >
