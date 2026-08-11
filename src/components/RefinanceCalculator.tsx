@@ -142,7 +142,7 @@ export default function RefinanceCalculator({ country }: RefinanceCalculatorProp
           )}
           <p className="text-xs mt-1.5 leading-relaxed" style={{ color: 'var(--text-muted)' }}>
             New payment {formatCurrency(result.newMonthlyPayment, country.currencyCode)} vs current{' '}
-            {formatCurrency(currentMonthlyPayment, currencyCode)}.
+            {formatCurrency(currentMonthlyPayment, country.currencyCode)}.
           </p>
         </div>
 
