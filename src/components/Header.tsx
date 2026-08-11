@@ -4,6 +4,7 @@ import { Calculator, DollarSign, Home, RefreshCw, ShieldCheck } from 'lucide-rea
 import Link from 'next/link';
 
 import { ThemeToggleButton } from '@/components/ThemeProvider';
+import { APP_NAME } from '@/lib/env';
 
 interface HeaderProps {
   activeTab: 'calculator' | 'affordability' | 'refinance';
@@ -49,7 +50,7 @@ export default function Header({
             </div>
             <div className="hidden sm:block">
               <span className="text-lg font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>
-                MortgagePro
+                {APP_NAME.replace(' Global', '')}
               </span>
               <span className="ml-2 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25 tracking-widest">
                 GLOBAL
