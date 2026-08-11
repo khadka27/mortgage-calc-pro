@@ -1,10 +1,11 @@
 'use client';
 
-import { RotateCcw } from 'lucide-react';
-import { useState } from 'react';
+import { AlertCircle, RotateCcw } from 'lucide-react';
+import { useMemo, useState } from 'react';
 
 import CustomSelect from '@/components/CustomSelect';
 import { CalculationInput, CountryConfig, PaymentFrequency } from '@/lib/mortgage/types';
+import { CalculationInputSchema, getFieldErrors } from '@/lib/mortgage/validation';
 
 interface MortgageFormProps {
   country: CountryConfig;
@@ -27,81 +28,78 @@ export default function MortgageForm({
 }: MortgageFormProps) {
   const [downPaymentMode, setDownPaymentMode] = useState<'amount' | 'percentage'>('amount');
 
+  // Compute field validation errors using Zod schema safely
+  const fieldErrors = useMemo(() => getFieldErrors(CalculationInputSchema, input), [input]);
+
   const handlePriceChange = (price: number) => {
-    const validPrice = Math.max(0, price);
     let newDown = input.downPayment;
     if (downPaymentMode === 'percentage') {
       const pct = (input.downPayment / (input.propertyPrice || 1)) * 100;
-      newDown = (validPrice * pct) / 100;
+      newDown = (price * pct) / 100;
     }
     onChangeInput({
       ...input,
-      propertyPrice: validPrice,
-      downPayment: Math.min(newDown, validPrice),
+      propertyPrice: price,
+      downPayment: newDown,
     });
   };
 
   const handleDownPaymentAmountChange = (amount: number) => {
-    const validAmount = Math.max(0, Math.min(amount, input.propertyPrice));
-    onChangeInput({ ...input, downPayment: validAmount });
+    onChangeInput({ ...input, downPayment: amount });
   };
 
   const handleDownPaymentPctChange = (pct: number) => {
-    const validPct = Math.max(0, Math.min(pct, 99.99));
-    onChangeInput({ ...input, downPayment: (input.propertyPrice * validPct) / 100 });
+    const newAmount = ((input.propertyPrice || 0) * pct) / 100;
+    onChangeInput({ ...input, downPayment: newAmount });
   };
 
+  const currentDownPct =
+    input.propertyPrice > 0
+      ? (input.downPayment / input.propertyPrice) * 100
+      : 0;
+
   const loanAmount = Math.max(0, input.propertyPrice - input.downPayment);
-  const currentDownPct = input.propertyPrice > 0 ? (input.downPayment / input.propertyPrice) * 100 : 0;
 
   const cardStyle: React.CSSProperties = {
     backgroundColor: 'var(--bg-card)',
     borderColor: 'var(--border)',
   };
+
   const inputStyle: React.CSSProperties = {
     backgroundColor: 'var(--bg-input)',
     borderColor: 'var(--border)',
     color: 'var(--text-primary)',
   };
-  const inputFocusBorder = 'border focus:border-emerald-500 dark:focus:border-emerald-400';
 
   return (
-    <div
-      className="border rounded-2xl p-4 sm:p-6 shadow-sm space-y-6 overflow-hidden"
-      style={cardStyle}
-    >
-      {/* Card Header */}
-      <div className="flex items-center justify-between border-b pb-4 gap-2" style={{ borderColor: 'var(--border)' }}>
-        <h2 className="text-base font-bold flex items-center gap-2 flex-wrap" style={{ color: 'var(--text-primary)' }}>
-          Mortgage Parameters
-          <span
-            className="text-xs font-semibold px-2 py-0.5 rounded-full border"
-            style={{
-              backgroundColor: 'var(--accent-bg)',
-              color: 'var(--accent)',
-              borderColor: 'var(--accent-border)',
-            }}
-          >
-            {country.currencyCode} ({country.currencySymbol})
-          </span>
-        </h2>
+    <div className="border rounded-2xl p-5 sm:p-7 shadow-sm space-y-6" style={cardStyle}>
+      {/* Header & Reset */}
+      <div className="flex items-center justify-between gap-4 border-b pb-4" style={{ borderColor: 'var(--border)' }}>
+        <div>
+          <h2 className="text-lg sm:text-xl font-black tracking-tight" style={{ color: 'var(--text-primary)' }}>
+            Mortgage Parameters
+          </h2>
+          <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+            Adjust loan variables to calculate periodic payments ({country.currencySymbol})
+          </p>
+        </div>
         <button
           type="button"
           onClick={onReset}
-          className="flex items-center gap-1 text-xs font-medium transition-colors hover:text-emerald-500 shrink-0"
-          style={{ color: 'var(--text-muted)' }}
+          className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-xl border transition-colors hover:bg-slate-100 dark:hover:bg-zinc-800"
+          style={{ backgroundColor: 'var(--bg-subtle)', borderColor: 'var(--border)', color: 'var(--text-secondary)' }}
+          title="Reset form to country defaults"
         >
-          <RotateCcw className="w-3 h-3" />
-          Reset
+          <RotateCcw className="w-3.5 h-3.5" />
+          <span>Reset</span>
         </button>
       </div>
 
+      {/* Main Parameters Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {/* Property Price */}
+        {/* Home / Property Price */}
         <div>
-          <label className={labelCls} style={{ color: 'var(--text-muted)' }}>
-            Property Price ({country.currencySymbol})
-          </label>
+          <label className={labelCls} style={{ color: 'var(--text-muted)' }}>Property Price</label>
           <div className="relative">
             <span
               className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-bold pointer-events-none"
@@ -112,29 +110,32 @@ export default function MortgageForm({
             <input
               type="number"
               min="0"
-              step="1000"
+              step="5000"
               value={input.propertyPrice || ''}
               onChange={(e) => handlePriceChange(Number(e.target.value))}
-              className={`${inputCls} ${inputFocusBorder} pl-8 pr-4`}
+              className={`${inputCls} ${fieldErrors.propertyPrice ? 'border-red-500 ring-2 ring-red-500/30' : ''} pl-8 pr-4`}
               style={inputStyle}
             />
           </div>
+          {fieldErrors.propertyPrice && (
+            <div className="text-red-500 text-xs font-semibold mt-1 flex items-center gap-1">
+              <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+              <span>{fieldErrors.propertyPrice}</span>
+            </div>
+          )}
         </div>
 
-        {/* Down Payment */}
+        {/* Down Payment (Toggle Amount vs Percentage) */}
         <div>
-          <div className="flex items-center justify-between mb-1.5 gap-1 flex-wrap">
-            <label className={labelCls} style={{ color: 'var(--text-muted)' }}>Down Payment</label>
-            <div
-              className="flex items-center gap-0.5 p-0.5 rounded-lg border text-[11px]"
-              style={{ backgroundColor: 'var(--bg-subtle)', borderColor: 'var(--border)' }}
-            >
+          <div className="flex items-center justify-between mb-1.5">
+            <label className={labelCls} style={{ color: 'var(--text-muted)', marginBottom: 0 }}>Down Payment</label>
+            <div className="flex items-center gap-1 text-[11px] font-semibold">
               <button
                 type="button"
                 onClick={() => setDownPaymentMode('amount')}
                 className={`px-2 py-0.5 rounded transition-all ${
                   downPaymentMode === 'amount'
-                    ? 'bg-emerald-500 text-white font-bold'
+                    ? 'bg-emerald-500 text-white font-bold shadow-xs'
                     : 'font-medium'
                 }`}
                 style={downPaymentMode !== 'amount' ? { color: 'var(--text-muted)' } : {}}
@@ -146,7 +147,7 @@ export default function MortgageForm({
                 onClick={() => setDownPaymentMode('percentage')}
                 className={`px-2 py-0.5 rounded transition-all ${
                   downPaymentMode === 'percentage'
-                    ? 'bg-emerald-500 text-white font-bold'
+                    ? 'bg-emerald-500 text-white font-bold shadow-xs'
                     : 'font-medium'
                 }`}
                 style={downPaymentMode !== 'percentage' ? { color: 'var(--text-muted)' } : {}}
@@ -167,12 +168,10 @@ export default function MortgageForm({
                 </span>
                 <input
                   type="number"
-                  min="0"
-                  max={input.propertyPrice}
                   step="500"
-                  value={input.downPayment || ''}
+                  value={input.downPayment !== undefined ? input.downPayment : ''}
                   onChange={(e) => handleDownPaymentAmountChange(Number(e.target.value))}
-                  className={`${inputCls} ${inputFocusBorder} pl-8 pr-16`}
+                  className={`${inputCls} ${fieldErrors.downPayment ? 'border-red-500 ring-2 ring-red-500/30' : ''} pl-8 pr-16`}
                   style={inputStyle}
                 />
                 <span
@@ -186,12 +185,10 @@ export default function MortgageForm({
               <>
                 <input
                   type="number"
-                  min="0"
-                  max="99.9"
                   step="0.5"
                   value={currentDownPct ? Number(currentDownPct.toFixed(2)) : ''}
                   onChange={(e) => handleDownPaymentPctChange(Number(e.target.value))}
-                  className={`${inputCls} ${inputFocusBorder} pl-4 pr-10`}
+                  className={`${inputCls} ${fieldErrors.downPayment ? 'border-red-500 ring-2 ring-red-500/30' : ''} pl-4 pr-10`}
                   style={inputStyle}
                 />
                 <span
@@ -203,6 +200,12 @@ export default function MortgageForm({
               </>
             )}
           </div>
+          {fieldErrors.downPayment && (
+            <div className="text-red-500 text-xs font-semibold mt-1 flex items-center gap-1">
+              <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+              <span>{fieldErrors.downPayment}</span>
+            </div>
+          )}
         </div>
 
         {/* Loan Amount (computed, read-only) */}
@@ -229,11 +232,11 @@ export default function MortgageForm({
             <input
               type="number"
               min="0"
-              max="30"
+              max="100"
               step="0.05"
-              value={input.interestRate || ''}
+              value={input.interestRate !== undefined ? input.interestRate : ''}
               onChange={(e) => onChangeInput({ ...input, interestRate: Number(e.target.value) })}
-              className={`${inputCls} ${inputFocusBorder} pl-4 pr-8`}
+              className={`${inputCls} ${fieldErrors.interestRate ? 'border-red-500 ring-2 ring-red-500/30' : ''} pl-4 pr-8`}
               style={inputStyle}
             />
             <span
@@ -243,6 +246,12 @@ export default function MortgageForm({
               %
             </span>
           </div>
+          {fieldErrors.interestRate && (
+            <div className="text-red-500 text-xs font-semibold mt-1 flex items-center gap-1">
+              <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+              <span>{fieldErrors.interestRate}</span>
+            </div>
+          )}
         </div>
 
         {/* Loan Term */}
@@ -254,6 +263,12 @@ export default function MortgageForm({
             onChange={(v) => onChangeInput({ ...input, loanTermYears: Number(v) })}
             options={country.availableLoanTerms.map((term) => ({ value: String(term), label: `${term} Years` }))}
           />
+          {fieldErrors.loanTermYears && (
+            <div className="text-red-500 text-xs font-semibold mt-1 flex items-center gap-1">
+              <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+              <span>{fieldErrors.loanTermYears}</span>
+            </div>
+          )}
         </div>
 
         {/* Payment Frequency */}
@@ -312,31 +327,30 @@ export default function MortgageForm({
         {/* Mortgage Type */}
         <div className="sm:col-span-2">
           <label className={labelCls} style={{ color: 'var(--text-muted)' }}>
-            Mortgage Product Type ({country.countryName})
+            Mortgage Structure / Product
           </label>
           <CustomSelect
             id="select-mortgage-type"
             value={input.mortgageTypeId || country.mortgageTypes[0]?.id || ''}
             onChange={(v) => onChangeInput({ ...input, mortgageTypeId: v })}
-            options={country.mortgageTypes.map((type) => ({
-              value: type.id,
-              label: type.name,
-              description: type.description,
+            options={country.mortgageTypes.map((p) => ({
+              value: p.id,
+              label: `${p.name} — ${p.description}`,
             }))}
           />
         </div>
       </div>
 
-      {/* Additional Housing Expenses */}
-      <div className="border-t pt-4 space-y-4" style={{ borderColor: 'var(--border)' }}>
-        <h3 className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>
-          Taxes, Insurance & Additional Fees
-        </h3>
+      {/* Taxes, Insurance & Extra Housing Costs Accordion */}
+      <div className="pt-4 border-t space-y-4" style={{ borderColor: 'var(--border)' }}>
+        <div className="text-xs font-bold uppercase tracking-wider text-emerald-500">
+          Taxes, Insurance &amp; HOA Costs
+        </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Property Tax */}
           <div>
-            <label className="block text-[11px] font-semibold mb-1 truncate" style={{ color: 'var(--text-muted)' }}>
+            <label className={labelCls} style={{ color: 'var(--text-muted)' }}>
               Annual Property Tax ({country.currencySymbol})
             </label>
             <input
@@ -344,59 +358,57 @@ export default function MortgageForm({
               min="0"
               step="100"
               value={input.propertyTaxAnnual !== undefined ? input.propertyTaxAnnual : ''}
-              placeholder={`Est. ${((input.propertyPrice * country.defaultPropertyTaxRatePct) / 100).toFixed(0)}`}
               onChange={(e) => onChangeInput({ ...input, propertyTaxAnnual: Number(e.target.value) })}
-              className="w-full rounded-lg px-3 py-2 text-xs border focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
+              className={inputCls}
               style={inputStyle}
             />
           </div>
 
           {/* Home Insurance */}
           <div>
-            <label className="block text-[11px] font-semibold mb-1 truncate" style={{ color: 'var(--text-muted)' }}>
-              Annual Home Insurance ({country.currencySymbol})
+            <label className={labelCls} style={{ color: 'var(--text-muted)' }}>
+              Annual Homeowners Insurance ({country.currencySymbol})
             </label>
             <input
               type="number"
               min="0"
-              step="50"
+              step="100"
               value={input.homeInsuranceAnnual !== undefined ? input.homeInsuranceAnnual : ''}
-              placeholder={`Est. ${((input.propertyPrice * country.defaultHomeInsuranceRatePct) / 100).toFixed(0)}`}
               onChange={(e) => onChangeInput({ ...input, homeInsuranceAnnual: Number(e.target.value) })}
-              className="w-full rounded-lg px-3 py-2 text-xs border focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
+              className={inputCls}
               style={inputStyle}
             />
           </div>
 
-          {/* PMI */}
+          {/* Monthly HOA */}
           <div>
-            <label className="block text-[11px] font-semibold mb-1 truncate" style={{ color: 'var(--text-muted)' }}>
-              Monthly PMI / Insurance ({country.currencySymbol})
+            <label className={labelCls} style={{ color: 'var(--text-muted)' }}>
+              Monthly HOA / Condo Fee ({country.currencySymbol})
             </label>
             <input
               type="number"
               min="0"
-              step="10"
-              value={input.mortgageInsuranceMonthly !== undefined ? input.mortgageInsuranceMonthly : ''}
-              placeholder={country.mortgageInsuranceAvailable ? 'Auto calculated' : 'N/A'}
-              onChange={(e) => onChangeInput({ ...input, mortgageInsuranceMonthly: Number(e.target.value) })}
-              className="w-full rounded-lg px-3 py-2 text-xs border focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
-              style={inputStyle}
-            />
-          </div>
-
-          {/* HOA */}
-          <div>
-            <label className="block text-[11px] font-semibold mb-1 truncate" style={{ color: 'var(--text-muted)' }}>
-              Monthly HOA / Fees ({country.currencySymbol})
-            </label>
-            <input
-              type="number"
-              min="0"
-              step="10"
-              value={input.hoaMonthly || ''}
+              step="25"
+              value={input.hoaMonthly !== undefined ? input.hoaMonthly : ''}
               onChange={(e) => onChangeInput({ ...input, hoaMonthly: Number(e.target.value) })}
-              className="w-full rounded-lg px-3 py-2 text-xs border focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
+              className={inputCls}
+              style={inputStyle}
+            />
+          </div>
+
+          {/* Monthly PMI / Mortgage Insurance Override */}
+          <div>
+            <label className={labelCls} style={{ color: 'var(--text-muted)' }}>
+              Monthly PMI / Mortgage Insurance ({country.currencySymbol})
+            </label>
+            <input
+              type="number"
+              min="0"
+              step="10"
+              placeholder="Auto-calculated if LTV > 80%"
+              value={input.mortgageInsuranceMonthly !== undefined ? input.mortgageInsuranceMonthly : ''}
+              onChange={(e) => onChangeInput({ ...input, mortgageInsuranceMonthly: Number(e.target.value) })}
+              className={inputCls}
               style={inputStyle}
             />
           </div>

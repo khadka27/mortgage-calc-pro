@@ -47,7 +47,7 @@ export const CalculationInputSchema = z
     otherMonthlyDebts: z.number().min(0).optional(),
   })
   .refine((data) => data.downPayment < data.propertyPrice, {
-    message: 'Down payment must be strictly less than the property price',
+    message: 'Down payment must be strictly less than property price',
     path: ['downPayment'],
   });
 
@@ -75,3 +75,16 @@ export const RefinanceInputSchema = z.object({
   newLoanTermYears: z.number().positive().max(50),
   closingCosts: z.number().min(0, 'Closing costs cannot be negative'),
 });
+
+export function getFieldErrors<T>(schema: z.ZodType<T>, input: unknown): Record<string, string> {
+  const result = schema.safeParse(input);
+  if (result.success) return {};
+  const errors: Record<string, string> = {};
+  for (const issue of result.error.issues) {
+    const path = issue.path.join('.') || 'general';
+    if (!errors[path]) {
+      errors[path] = issue.message;
+    }
+  }
+  return errors;
+}
