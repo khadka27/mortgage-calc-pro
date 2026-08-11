@@ -62,10 +62,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{
             __html: `
               window.addEventListener('unhandledrejection', function(event) {
-                if (event.reason && event.reason.stack && event.reason.stack.includes('chrome-extension://')) {
+                const str = String(event.reason && (event.reason.stack || event.reason.message || event.reason));
+                if (str.includes('chrome-extension://') || str.includes('M_ID') || str.includes('executors')) {
                   event.preventDefault();
+                  event.stopImmediatePropagation();
                 }
               });
+              window.addEventListener('error', function(event) {
+                const str = String(event.message || event.filename || '');
+                if (str.includes('chrome-extension://') || str.includes('M_ID')) {
+                  event.preventDefault();
+                  event.stopImmediatePropagation();
+                }
+              }, true);
             `,
           }}
         />
@@ -86,28 +95,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="flex-1" suppressHydrationWarning>
             {children}
           </div>
-
-          <footer
-            className="border-t py-8 px-4 sm:px-6 lg:px-8 text-xs no-print"
-            style={{ borderColor: 'var(--border)', color: 'var(--text-muted)', backgroundColor: 'var(--bg-card)' }}
-          >
-            <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div>
-                <div className="font-bold text-sm" style={{ color: 'var(--text-primary)' }}>
-                  {APP_NAME}
-                </div>
-                <div>Mathematically precise financial calculations using decimal.js arithmetic.</div>
-              </div>
-              <div className="flex items-center gap-4" style={{ color: 'var(--text-muted)' }}>
-                <a href="/mortgage-calculator/us"  className="hover:text-emerald-500 transition-colors">USA</a>
-                <a href="/mortgage-calculator/ca"  className="hover:text-emerald-500 transition-colors">Canada</a>
-                <a href="/mortgage-calculator/uk"  className="hover:text-emerald-500 transition-colors">UK</a>
-                <a href="/mortgage-calculator/au"  className="hover:text-emerald-500 transition-colors">Australia</a>
-                <a href="/mortgage-calculator/in"  className="hover:text-emerald-500 transition-colors">India</a>
-                <a href="/mortgage-calculator/np"  className="hover:text-emerald-500 transition-colors">Nepal</a>
-              </div>
-            </div>
-          </footer>
         </ThemeProvider>
       </body>
     </html>
