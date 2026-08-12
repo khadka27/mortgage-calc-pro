@@ -1,6 +1,7 @@
 'use client';
 
 import { Home, Search } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 
 export default function NotFound() {
@@ -11,11 +12,14 @@ export default function NotFound() {
     >
       <div className="max-w-md w-full text-center space-y-6 animate-in fade-in zoom-in-95 duration-200">
         {/* 404 SVG Illustration */}
-        <div className="w-64 h-64 sm:w-80 sm:h-80 mx-auto flex items-center justify-center">
-          <img
+        <div className="w-64 h-64 sm:w-80 sm:h-80 mx-auto flex items-center justify-center relative">
+          <Image
             src="/404 error.svg"
             alt="404 Page Not Found"
+            width={320}
+            height={320}
             className="w-full h-full object-contain"
+            priority
           />
         </div>
 

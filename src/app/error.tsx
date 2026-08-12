@@ -1,6 +1,7 @@
 'use client';
 
 import { Home, RefreshCw } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect } from 'react';
 
@@ -23,11 +24,14 @@ export default function Error({
     >
       <div className="max-w-md w-full text-center space-y-6 animate-in fade-in zoom-in-95 duration-200">
         {/* Error SVG Illustration */}
-        <div className="w-64 h-64 sm:w-80 sm:h-80 mx-auto flex items-center justify-center">
-          <img
+        <div className="w-64 h-64 sm:w-80 sm:h-80 mx-auto flex items-center justify-center relative">
+          <Image
             src="/Error.svg"
             alt="Application Error"
+            width={320}
+            height={320}
             className="w-full h-full object-contain"
+            priority
           />
         </div>
 
@@ -40,7 +44,7 @@ export default function Error({
             Something Went Wrong
           </h1>
           <p className="text-sm leading-relaxed max-w-sm mx-auto" style={{ color: 'var(--text-secondary)' }}>
-            An unexpected error occurred while calculating financial analytics. Don't worry, your data is safe.
+            An unexpected error occurred while calculating financial analytics. Don&apos;t worry, your data is safe.
           </p>
         </div>
 

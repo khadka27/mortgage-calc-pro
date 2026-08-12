@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import { Activity, Calculator, DollarSign, Globe, Home, Layers, Menu, PanelLeftClose, PanelLeftOpen, RefreshCw, ShieldCheck, Sparkles, X } from 'lucide-react';

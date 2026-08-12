@@ -187,7 +187,7 @@ export default function RefinanceCalculator({ country }: RefinanceCalculatorProp
           >
             <TrendingUp className="w-5 h-5 shrink-0" />
             <div>
-              <strong>Refinance Caution:</strong> Proposed terms don't generate sufficient savings to justify closing costs.
+              <strong>Refinance Caution:</strong> Proposed terms don&apos;t generate sufficient savings to justify closing costs.
             </div>
           </div>
         )}
